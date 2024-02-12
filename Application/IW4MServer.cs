@@ -98,10 +98,12 @@ namespace IW4MAdmin
             ServerLogger.LogDebug("Client slot #{clientNumber} now reserved", clientFromLog.ClientNumber);
 
             var client = await Manager.GetClientService().GetUnique(clientFromLog.NetworkId, GameName);
+            var foundClient = true;
 
             // first time client is connecting to server
             if (client == null)
             {
+                foundClient = false;
                 ServerLogger.LogDebug("Client {client} first time connecting", clientFromLog.ToString());
                 clientFromLog.CurrentServer = this;
                 client = await Manager.GetClientService().Create(clientFromLog);
@@ -109,12 +111,16 @@ namespace IW4MAdmin
 
             client.CopyAdditionalProperties(clientFromLog);
 
-            // this is only a temporary version until the IPAddress is transmitted
-            client.CurrentAlias = new EFAlias()
+            if (foundClient)
             {
-                Name = clientFromLog.Name,
-                IPAddress = clientFromLog.IPAddress
-            };
+                client.CurrentAlias = new EFAlias
+                {
+                    AliasId = client.CurrentAliasId,
+                    LinkId = client.AliasLinkId,
+                    Name = clientFromLog.Name,
+                    IPAddress = clientFromLog.IPAddress
+                };
+            }
 
             // Do the player specific stuff
             client.ClientNumber = clientFromLog.ClientNumber;
@@ -413,10 +419,7 @@ namespace IW4MAdmin
                 {
                     if (E.Origin.State != ClientState.Connected)
                     {
-                        E.Origin.State = ClientState.Connected;
-                        E.Origin.Connections += 1;
-
-                        ChatHistory.Add(new ChatInfo()
+                        ChatHistory.Add(new ChatInfo
                         {
                             Name = E.Origin.Name,
                             Message = "CONNECTED",
@@ -430,6 +433,10 @@ namespace IW4MAdmin
                         {
                             E.Origin.Tag = clientTag.Value;
                         }
+                                 
+                        await E.Origin.OnJoin(E.Origin.IPAddress, Manager.GetApplicationSettings().Configuration().EnableImplicitAccountLinking);
+                        E.Origin.State = ClientState.Connected;
+                        E.Origin.Connections += 1;
 
                         try
                         {
@@ -449,8 +456,6 @@ namespace IW4MAdmin
                             ServerLogger.LogError(ex, "Could not get offline message count for {Client}", E.Origin.ToString());
                             throw;
                         }
-                        
-                        await E.Origin.OnJoin(E.Origin.IPAddress, Manager.GetApplicationSettings().Configuration().EnableImplicitAccountLinking);
                     }
                 }
 
@@ -905,6 +910,12 @@ namespace IW4MAdmin
             {
                 gameServer.HostName = ServerName;
                 context.Entry(gameServer).Property(property => property.HostName).IsModified = true;
+            }
+
+            if (gameServer.PerformanceBucket != PerformanceBucket)
+            {
+                gameServer.PerformanceBucket = PerformanceBucket;
+                context.Entry(gameServer).Property(property => property.PerformanceBucket).IsModified = true;
             }
 
             if (gameServer.IsPasswordProtected != !string.IsNullOrEmpty(GamePassword))

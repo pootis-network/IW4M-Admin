@@ -113,6 +113,7 @@ namespace WebfrontCore
             services.AddTransient<IValidator<FindClientRequest>, FindClientRequestValidator>();
             services.AddSingleton<IResourceQueryHelper<FindClientRequest, FindClientResult>, ClientService>();
             services.AddSingleton<IResourceQueryHelper<StatsInfoRequest, StatsInfoResult>, StatsResourceQueryHelper>();
+            services.AddSingleton<IResourceQueryHelper<ClientRankingInfoRequest, ClientRankingInfo>, AdvancedClientStatsResourceQueryHelper>();
             services
                 .AddSingleton<IResourceQueryHelper<StatsInfoRequest, AdvancedStatsInfo>,
                     AdvancedClientStatsResourceQueryHelper>();

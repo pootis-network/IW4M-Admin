@@ -71,7 +71,6 @@ public class BaseConfigurationHandlerV2<TConfigurationType> : IConfigurationHand
             await using var fileStream = File.OpenRead(_path);
             readConfiguration =
                 await JsonSerializer.DeserializeAsync<TConfigurationType>(fileStream, _serializerOptions);
-            await fileStream.DisposeAsync();
             _watcher.Register(_path, FileUpdated);
 
             if (readConfiguration is null)
@@ -131,7 +130,6 @@ public class BaseConfigurationHandlerV2<TConfigurationType> : IConfigurationHand
 
             await using var fileStream = File.Create(_path);
             await JsonSerializer.SerializeAsync(fileStream, configuration, _serializerOptions);
-            await fileStream.DisposeAsync();
             _configurationInstance = configuration;
         }
         catch (Exception ex)
@@ -155,7 +153,6 @@ public class BaseConfigurationHandlerV2<TConfigurationType> : IConfigurationHand
             await using var fileStream = File.OpenRead(_path);
             var readConfiguration =
                 await JsonSerializer.DeserializeAsync<TConfigurationType>(fileStream, _serializerOptions);
-            await fileStream.DisposeAsync();
 
             if (readConfiguration is null)
             {

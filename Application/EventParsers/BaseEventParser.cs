@@ -218,12 +218,13 @@ namespace IW4MAdmin.Application.EventParsers
             return GenerateDefaultEvent(logLine, gameTime);
         }
 
-        private static GameEvent GenerateDefaultEvent(string logLine, long gameTime)
+        private static GameLogEvent GenerateDefaultEvent(string logLine, long gameTime)
         {
-            return new GameEvent
+            return new GameLogEvent
             {
                 Type = GameEvent.EventType.Unknown,
                 Data = logLine,
+                LogLine = logLine,
                 Origin = Utilities.IW4MAdminClient(),
                 Target = Utilities.IW4MAdminClient(),
                 RequiredEntity = GameEvent.EventRequiredEntity.None,

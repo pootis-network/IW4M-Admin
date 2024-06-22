@@ -86,6 +86,11 @@ public interface IGameEventSubscriptions
     /// </summary>
     static event Func<GameScriptEvent, CancellationToken, Task> ScriptEventTriggered;
 
+    /// <summary>
+    /// Raised when game log prints a line that is not handled by any other cases
+    /// </summary>
+    static event Func<GameLogEvent, CancellationToken, Task> GameLogEventTriggered;
+
     static Task InvokeEventAsync(CoreEvent coreEvent, CancellationToken token)
     {
         return coreEvent switch
@@ -100,6 +105,7 @@ public interface IGameEventSubscriptions
             ClientCommandEvent clientCommandEvent => ClientEnteredCommand?.InvokeAsync(clientCommandEvent, token) ?? Task.CompletedTask,
             ClientMessageEvent clientMessageEvent => ClientMessaged?.InvokeAsync(clientMessageEvent, token) ?? Task.CompletedTask,
             GameScriptEvent gameScriptEvent => ScriptEventTriggered?.InvokeAsync(gameScriptEvent, token) ?? Task.CompletedTask,
+            GameLogEvent gameLogEvent => GameLogEventTriggered?.InvokeAsync(gameLogEvent, token) ?? Task.CompletedTask,
             _ => Task.CompletedTask
         };
     }
@@ -116,5 +122,6 @@ public interface IGameEventSubscriptions
         ClientMessaged = null;
         ClientEnteredCommand = null;
         ScriptEventTriggered = null;
+        GameLogEventTriggered = null;
     }
 }

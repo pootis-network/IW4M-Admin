@@ -1,12 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+
 // ReSharper disable CompareOfFloatsByEqualityOperator
 #pragma warning disable CS0659
 
 namespace Data.Models
 {
-    public class Vector3
+    public class Vector3 : IParsable<Vector3>
     {
         [Key] public int Vector3Id { get; set; }
         public float X { get; protected set; }
@@ -78,7 +79,7 @@ namespace Data.Models
 
             return Math.Sqrt((dx * dx) + (dy * dy));
         }
-        
+
         public static double ViewAngleDistance(Vector3 a, Vector3 b, Vector3 c)
         {
             double dabX = Math.Abs(a.X - b.X);
@@ -111,5 +112,30 @@ namespace Data.Models
         public double Magnitude() => Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
 
         public double AngleBetween(Vector3 a) => Math.Acos(this.DotProduct(a) / (a.Magnitude() * this.Magnitude()));
+
+        public static Vector3 Parse(string s, IFormatProvider provider)
+        {
+            return Parse(s);
+        }
+
+        public static bool TryParse(string s, IFormatProvider provider, out Vector3 result)
+        {
+            result = new Vector3();
+
+            try
+            {
+                var parsed = Parse(s);
+                result.X = parsed.X;
+                result.Y = parsed.Y;
+                result.Z = parsed.Z;
+                return true;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return false;
+        }
     }
 }

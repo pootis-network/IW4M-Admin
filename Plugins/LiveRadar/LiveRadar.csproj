@@ -15,8 +15,11 @@
     <StartupObject />
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="RaidMax.IW4MAdmin.SharedLibraryCore" Version="2024.2.5.9" PrivateAssets="All" />
+  <ItemGroup><!--<PackageReference Include="RaidMax.IW4MAdmin.SharedLibraryCore" Version="2024.2.5.9" PrivateAssets="All" />-->
+  
+    <ProjectReference Include="..\..\Data\Data.csproj" />
+  
+    <ProjectReference Include="..\..\SharedLibraryCore\SharedLibraryCore.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

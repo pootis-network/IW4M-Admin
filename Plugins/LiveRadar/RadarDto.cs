@@ -1,13 +1,13 @@
 ﻿using Data.Models;
 using SharedLibraryCore;
-using System;
-using System.Linq;
+using IW4MAdmin.Plugins.LiveRadar.Events;
+
 // ReSharper disable CompareOfFloatsByEqualityOperator
 #pragma warning disable CS0659
 
 namespace IW4MAdmin.Plugins.LiveRadar;
 
-public class RadarEvent
+public class RadarDto
 {
     public string Name { get; set; }
     public long Guid { get; set; }
@@ -26,7 +26,7 @@ public class RadarEvent
 
     public override bool Equals(object obj)
     {
-        if (obj is RadarEvent re)
+        if (obj is RadarDto re)
         {
             return re.ViewAngles.X == ViewAngles.X &&
                    re.ViewAngles.Y == ViewAngles.Y &&
@@ -39,23 +39,21 @@ public class RadarEvent
         return false;
     }
 
-    public static RadarEvent Parse(string input, long generatedBotGuid)
+    public static RadarDto FromScriptEvent(LiveRadarScriptEvent scriptEvent, long generatedBotGuid)
     {
-        var items = input.Split(';').Skip(1).ToList();
-
-        var parsedEvent = new RadarEvent()
+        var parsedEvent = new RadarDto
         {
             Guid = generatedBotGuid,
-            Location = Vector3.Parse(items[1]),
-            ViewAngles = Vector3.Parse(items[2]).FixIW4Angles(),
-            Team = items[3],
-            Kills = int.Parse(items[4]),
-            Deaths = int.Parse(items[5]),
-            Score = int.Parse(items[6]),
-            Weapon = items[7],
-            Health = int.Parse(items[8]),
-            IsAlive = items[9] == "1",
-            PlayTime = Convert.ToInt32(items[10])
+            Location = scriptEvent.Location,
+            ViewAngles = scriptEvent.ViewAngles.FixIW4Angles(),
+            Team = scriptEvent.Team,
+            Kills = scriptEvent.Kills,
+            Deaths = scriptEvent.Deaths,
+            Score = scriptEvent.Score,
+            Weapon =scriptEvent.Weapon,
+            Health = scriptEvent.Health,
+            IsAlive = scriptEvent.IsAlive,
+            PlayTime = scriptEvent.PlayTime
         };
 
         return parsedEvent;

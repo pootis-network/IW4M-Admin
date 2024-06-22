@@ -36,6 +36,9 @@ public class Plugin : IPluginV2
     public static void RegisterDependencies(IServiceCollection serviceCollection)
     {
         serviceCollection.AddConfiguration<LiveRadarConfiguration>();
+        
+        serviceCollection.AddSingleton<IGameScriptEvent, LiveRadarScriptEvent>(); // for identification 
+        serviceCollection.AddTransient<LiveRadarScriptEvent>(); // for factory
     }
 
     public Plugin(ILogger<Plugin> logger, ApplicationConfiguration appConfig)
@@ -51,7 +54,7 @@ public class Plugin : IPluginV2
 
     private Task OnScriptEvent(GameScriptEvent scriptEvent, CancellationToken token)
     {
-        if (scriptEvent is not LiveRadarEvent radarEvent)
+        if (scriptEvent is not LiveRadarScriptEvent radarEvent)
         {
             return Task.CompletedTask;
         }
@@ -83,14 +86,15 @@ public class Plugin : IPluginV2
                     : (originalBotGuid ?? "0").ConvertGuidToLong(NumberStyles.HexNumber);
             }
 
-            var radarUpdate = RadarEvent.Parse(scriptEvent.ScriptData, generatedBotGuid);
+            var radarDto = RadarDto.FromScriptEvent(radarEvent, generatedBotGuid);
+
             var client =
-                radarEvent.Owner.ConnectedClients.FirstOrDefault(client => client.NetworkId == radarUpdate.Guid);
+                radarEvent.Owner.ConnectedClients.FirstOrDefault(client => client.NetworkId == radarDto.Guid);
 
             if (client != null)
             {
-                radarUpdate.Name = client.Name.StripColors();
-                client.SetAdditionalProperty("LiveRadar", radarUpdate);
+                radarDto.Name = client.Name.StripColors();
+                client.SetAdditionalProperty("LiveRadar", radarDto);
             }
         }
 

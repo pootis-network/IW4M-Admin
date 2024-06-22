@@ -39,6 +39,7 @@ using IW4MAdmin.Plugins.Stats.Client.Abstractions;
 using IW4MAdmin.Plugins.Stats.Client;
 using Microsoft.Extensions.Hosting;
 using Refit;
+using SharedLibraryCore.Interfaces.Events;
 using Stats.Client.Abstractions;
 using Stats.Client;
 using Stats.Config;
@@ -527,6 +528,7 @@ namespace IW4MAdmin.Application
                 .AddSingleton(new ConfigurationWatcher())
                 .AddSingleton(typeof(IConfigurationHandlerV2<>), typeof(BaseConfigurationHandlerV2<>))
                 .AddSingleton<IScriptPluginFactory, ScriptPluginFactory>()
+                .AddSingleton<IGameScriptEventFactory, GameScriptEventFactory>()
                 .AddSingleton(translationLookup)
                 .AddDatabaseContextOptions(appConfig);
            

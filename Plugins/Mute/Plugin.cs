@@ -22,7 +22,7 @@ public class Plugin : IPluginV2
     public const string MuteKey = "IW4MMute";
     public static IManager Manager { get; private set; } = null!;
     public static Server.Game[] SupportedGames { get; private set; } = Array.Empty<Server.Game>();
-    private static readonly string[] DisabledCommands = {nameof(PrivateMessageAdminsCommand), "PrivateMessageCommand"};
+    private static readonly string[] DisabledCommands = [nameof(PrivateMessageAdminsCommand), "PrivateMessageCommand"];
     private readonly IInteractionRegistration _interactionRegistration;
     private readonly IRemoteCommandService _remoteCommandService;
     private readonly MuteManager _muteManager;
@@ -37,6 +37,7 @@ public class Plugin : IPluginV2
 
         IManagementEventSubscriptions.Load += OnLoad;
         IManagementEventSubscriptions.Unload += OnUnload;
+
         IManagementEventSubscriptions.ClientStateInitialized += OnClientStateInitialized;
 
         IGameServerEventSubscriptions.ClientDataUpdated += OnClientDataUpdated;

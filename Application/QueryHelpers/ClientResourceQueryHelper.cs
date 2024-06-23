@@ -91,9 +91,9 @@ public class ClientResourceQueryHelper : IResourceQueryHelper<ClientResourceRequ
             ? iqGroupedClientAliases.OrderByDescending(clientAlias => clientAlias.Key.LastConnection)
             : iqGroupedClientAliases.OrderBy(clientAlias => clientAlias.Key.LastConnection);
 
-        var clientIds = iqGroupedClientAliases.Select(g => g.Key.ClientId)
+        var clientIds = await iqGroupedClientAliases.Select(g => g.Key.ClientId)
             .Skip(query.Offset)
-            .Take(query.Count);
+            .Take(query.Count).ToListAsync(); // todo: this change was for a pomelo limitation and may be addressed in future version
 
         // this pulls in more records than we need, but it's more efficient than ordering grouped entities
         var clientLookups = await clientAliases

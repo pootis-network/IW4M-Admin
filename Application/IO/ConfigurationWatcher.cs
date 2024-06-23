@@ -20,7 +20,6 @@ public sealed class ConfigurationWatcher : IDisposable
         };
 
         _watcher.Changed += WatcherOnChanged;
-        _watcher.EnableRaisingEvents = true;
     }
 
     public void Dispose()
@@ -31,30 +30,28 @@ public sealed class ConfigurationWatcher : IDisposable
 
     public void Register(string fileName, Action<string> fileUpdated)
     {
-        if (_registeredActions.ContainsKey(fileName))
-        {
-            return;
-        }
-
-        _registeredActions.Add(fileName, fileUpdated);
+        _registeredActions.TryAdd(fileName, fileUpdated);
     }
 
     public void Unregister(string fileName)
     {
-        if (_registeredActions.ContainsKey(fileName))
-        {
-            _registeredActions.Remove(fileName);
-        }
+        _registeredActions.Remove(fileName);
+    }
+
+    public void Enable()
+    {
+        _watcher.EnableRaisingEvents = true;
     }
 
     private void WatcherOnChanged(object sender, FileSystemEventArgs eventArgs)
     {
-        if (!_registeredActions.ContainsKey(eventArgs.FullPath) || eventArgs.ChangeType != WatcherChangeTypes.Changed ||
+        if (!_registeredActions.TryGetValue(eventArgs.FullPath, out var value) ||
+            eventArgs.ChangeType != WatcherChangeTypes.Changed ||
             new FileInfo(eventArgs.FullPath).Length == 0)
         {
             return;
         }
 
-        _registeredActions[eventArgs.FullPath].Invoke(eventArgs.FullPath);
+        value.Invoke(eventArgs.FullPath);
     }
 }

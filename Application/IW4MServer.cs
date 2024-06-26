@@ -198,7 +198,7 @@ namespace IW4MAdmin
                         {
                             var canExecute = true;
 
-                            if (E.Origin.CommandExecutionAttempts > 0)
+                            if (E.Origin.CommandExecutionAttempts > 0 && E.Origin.Level < Permission.Trusted)
                             {
                                 var remainingTimeout =
                                     E.Origin.LastCommandExecutionAttempt +

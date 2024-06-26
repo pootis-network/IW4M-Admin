@@ -33,19 +33,15 @@
   
   <ItemGroup>
     <Content Update="wwwroot\**\*.*" CopyToPublishDirectory="Never" />
-    <Content Update="wwwroot\css\src\global.css" CopyToPublishDirectory="Never" />
     <Content Update="wwwroot\css\src\global.min.css" CopyToPublishDirectory="Never" />
     <Content Update="Views\*.*" CopyToPublishDirectory="Never" />
     <None Include="wwwroot\css\global.min.css" CopyToPublishDirectory="PreserveNewest" />
     <None Include="wwwroot\js\global.min.js" CopyToPublishDirectory="PreserveNewest" />
     <None Include="wwwroot\images\**\*.*" CopyToPublishDirectory="PreserveNewest" />
-    <Content Remove="wwwroot\css\src\main.css.map" />
-    <Content Remove="dotnet-bundle.runtimeconfig.json" />
-    <Content Remove="dotnet-bundle.deps.json" />
+    <None Remove="Properties\launchSettings.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BuildWebCompiler2022" Version="1.14.10" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.ConcurrencyLimiter" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.6" />
@@ -78,7 +74,4 @@
     </VisualStudio>
   </ProjectExtensions>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Debug ( &#xA;powershell -Command wget https://raw.githubusercontent.com/iconic/open-iconic/master/font/css/open-iconic-bootstrap.scss -o $(ProjectDir)wwwroot\lib\open-iconic\font\css\open-iconic-bootstrap-override.scss&#xA;echo d | xcopy /f /y $(ProjectDir)wwwroot\lib\open-iconic\font\fonts $(ProjectDir)wwwroot\font\&#xA;powershell -Command &quot;((Get-Content -path  $(ProjectDir)wwwroot\lib\open-iconic\font\css\open-iconic-bootstrap-override.scss -Raw) -replace '../fonts/','/font/') | Set-Content -Path $(ProjectDir)wwwroot\lib\open-iconic\font\css\open-iconic-bootstrap-override.scss&quot;&#xA;)" />
-  </Target>
 </Project>

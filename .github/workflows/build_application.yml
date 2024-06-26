@@ -1,0 +1,188 @@
+name: Application build
+
+on:
+  push:
+    branches: [ develop, release/pre, master ]
+    paths:
+      - Application/**
+      - .github/workflows/build_application.yml
+  pull_request:
+    branches: [ develop ]
+    paths:
+      - Application/**
+
+env:
+  releaseType: prerelease
+
+jobs:
+  make_version:
+    runs-on: ubuntu-latest
+    outputs:
+      build_num: ${{ steps.generate_build_number.outputs.build_num }}
+    
+    steps:
+      - name: Make build number
+        id: generate_build_number
+        run: |
+          build_num=$(date +'%Y.%-m.%-d').$(date +'%3N' | sed 's/^0*//')
+          echo "build_num=$build_num" >> $GITHUB_OUTPUT
+          echo "Build number is $build_num"
+  
+  build:
+    runs-on: ubuntu-latest
+    needs: [ make_version ]
+
+    env:
+      solution: IW4MAdmin.sln
+      buildConfiguration: Prerelease
+      isPreRelease: false
+
+      buildPlatform: Any CPU
+      outputFolder: ${{ github.workspace }}/Publish/Prerelease
+      buildNumber: ${{ needs.make_version.outputs.build_num }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore NuGet packages
+        run: dotnet restore ${{ env.solution }}
+
+      - name: Preload external resources
+        run: |
+          echo "Build Configuration is ${{ env.buildConfiguration }}, Release Type is ${{ env.releaseType }}"
+          mkdir -p WebfrontCore/wwwroot/lib/open-iconic/font/css
+          curl -o WebfrontCore/wwwroot/lib/open-iconic/font/css/open-iconic-bootstrap-override.scss https://raw.githubusercontent.com/iconic/open-iconic/master/font/css/open-iconic-bootstrap.scss
+          sed -i 's#../fonts/#/font/#g' WebfrontCore/wwwroot/lib/open-iconic/font/css/open-iconic-bootstrap-override.scss
+
+      - name: Build webfront
+        run: dotnet build WebfrontCore/WebfrontCore.csproj -c ${{ env.buildConfiguration }} /p:Configuration=${{ env.buildConfiguration }} /p:Platform="x64"
+
+      - name: Compile SCSS files
+        run: |
+          dotnet tool install Excubo.WebCompiler --global
+          webcompiler -r WebfrontCore/wwwroot/css/src -o WebfrontCore/wwwroot/css/ -m disable -z disable
+          webcompiler WebfrontCore/wwwroot/lib/open-iconic/font/css/open-iconic-bootstrap-override.scss -o WebfrontCore/wwwroot/css/ -m disable -z disable
+
+      - name: Bundle JS files
+        run: |
+          echo 'Getting dotnet bundle'
+          curl -o ${{ github.workspace }}/dotnet-bundle.zip https://raidmax.org/IW4MAdmin/res/dotnet-bundle.zip
+          echo 'Unzipping download'
+          unzip ${{ github.workspace }}/dotnet-bundle.zip -d ${{ github.workspace }}/bundle
+          echo 'Executing dotnet-bundle'
+          cd ${{ github.workspace }}/bundle
+          dotnet dotnet-bundle.dll clean ${{ github.workspace }}/WebfrontCore/bundleconfig.json
+          dotnet dotnet-bundle.dll ${{ github.workspace }}/WebfrontCore/bundleconfig.json
+
+      - name: Build plugins
+        run: |
+          cd Plugins
+          find . -name "*.csproj" -print0 | xargs -0 -I {} dotnet publish {} -c ${{ env.buildConfiguration }} -o ../BUILD/Plugins /p:Configuration=${{ env.buildConfiguration }} /p:Platform="x64" /p:DeployOnBuild=false /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true /p:Version=${{ env.buildNumber }} --no-restore
+
+      - name: Build application
+        run: dotnet publish Application/Application.csproj -c ${{ env.buildConfiguration }} -o ${{ env.outputFolder }} /p:Version=${{ env.buildNumber }} /p:Configuration=${{ env.buildConfiguration }} /p:Platform="x64" --no-restore
+
+      - name: Download translations
+        run: |
+          mkdir -p "${{ env.outputFolder }}/Localization"
+          localizations=("en-US" "ru-RU" "es-EC" "pt-BR" "de-DE")
+          for localization in "${localizations[@]}"
+          do
+            url="https://master.iw4.zip/localization/$localization"
+            filePath="${{ env.outputFolder }}/Localization/IW4MAdmin.$localization.json"
+            curl -s "$url" -o "$filePath"
+          done
+
+      - name: Clean up publish files
+        run: |
+          chmod +x ${{ github.workspace }}/Application/BuildScripts/PostBuild.sh
+          bash ${{ github.workspace }}/Application/BuildScripts/PostBuild.sh ${{ env.outputFolder }} ${{ github.workspace }}
+
+      - name: Generate start scripts
+        run: |
+          cat << EOF > "${{ env.outputFolder }}/StartIW4MAdmin.cmd"
+          @echo off
+          @title IW4MAdmin
+          set DOTNET_CLI_TELEMETRY_OPTOUT=1
+          dotnet Lib\IW4MAdmin.dll
+          pause
+          EOF
+          
+          cat << EOF > "${{ env.outputFolder }}/StartIW4MAdmin.sh"
+          #!/bin/bash
+          export DOTNET_CLI_TELEMETRY_OPTOUT=1
+          dotnet Lib/IW4MAdmin.dll
+          EOF
+
+      - name: Move extra content into publish directory
+        run: |
+          cp ${{ github.workspace }}/Plugins/ScriptPlugins/*.js ${{ env.outputFolder }}/Plugins/
+          cp ${{ github.workspace }}/BUILD/Plugins/*.dll ${{ env.outputFolder }}/Plugins/
+          mkdir ${{ env.outputFolder }}/wwwroot/css
+          cp ${{ github.workspace }}/WebfrontCore/wwwroot/css/global.min.css ${{ env.outputFolder }}/wwwroot/css/global.min.css
+          mkdir ${{ env.outputFolder }}/wwwroot/js
+          cp ${{ github.workspace }}/WebfrontCore/wwwroot/js/global.min.js ${{ env.outputFolder }}/wwwroot/js/global.min.js
+          rsync -a ${{ github.workspace }}/WebfrontCore/font/ ${{ env.outputFolder }}/wwwroot/font/
+          rsync -a ${{ github.workspace }}/GameFiles/ ${{ env.outputFolder }}/
+          rsync -a ${{ github.workspace }}/BUILD/Plugins/wwwroot/ ${{ env.outputFolder }}/wwwroot/
+
+      - name: Upload artifact for analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: IW4MAdmin-${{ env.buildNumber }}
+          path: ${{ env.outputFolder }}
+  
+  release_github:
+    runs-on: ubuntu-latest
+    needs: [ make_version, build ]
+    permissions:
+      contents: write
+    environment: prerelease
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release/pre' }}
+    
+    env:
+      buildNumber: ${{ needs.make_version.outputs.build_num }}
+    
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: IW4MAdmin-${{ env.buildNumber }}
+          path: ${{ github.workspace }}
+
+      - name: Zip build
+        run: zip -r IW4MAdmin-${{ env.buildNumber }}.zip ${{ github.workspace }}/*
+
+      - name: Make release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.buildNumber }}-${{ env.releaseType }}
+          name: IW4MAdmin ${{ env.buildNumber }}
+          draft: true
+          prerelease: true
+          body: Automated rolling release - changelog below. [Updating Instructions](https://github.com/RaidMax/IW4M-Admin/wiki/Getting-Started#updating)
+          generateReleaseNotes: true
+          artifacts: ${{ github.workspace }}/*.zip
+          artifactErrorsFailBuild: true
+
+  update_master_version:
+    runs-on: ubuntu-latest
+    needs: [ make_version, build, release_github ]
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release/pre' }}
+
+    env:
+      buildNumber: ${{ needs.make_version.outputs.build_num }}
+    
+    steps:
+      - name: Update master version
+        run: |
+          curl --header "Content-Type: application/json" \
+          --request POST \
+          --data '{"current-version-${{ env.releaseType }}":"${{ env.buildNumber }}","jwt-secret": "${{ secrets.JWTSecret }}"}' \
+          http://api.raidmax.org:5000/version

@@ -59,11 +59,6 @@
            <IncludeAssets>Data.dll</IncludeAssets>
        </ProjectReference>
     </ItemGroup>
-
-    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-        <Exec Command="if not exist &quot;$(ProjectDir)..\BUILD&quot; (&#xD;&#xA;if $(ConfigurationName) == Debug (&#xD;&#xA;md &quot;$(ProjectDir)..\BUILD&quot;&#xD;&#xA;)&#xD;&#xA;)&#xD;&#xA;if not exist &quot;$(ProjectDir)..\BUILD\Plugins&quot; (&#xD;&#xA;if $(ConfigurationName) == Debug (&#xD;&#xA;md &quot;$(ProjectDir)..\BUILD\Plugins&quot;&#xD;&#xA;)&#xD;&#xA;)" />
-    </Target>
-
     <PropertyGroup>
         <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     </PropertyGroup>

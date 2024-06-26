@@ -1,0 +1,44 @@
+name:  Build and Pack SharedLibraryCore Nuget
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build_pack:
+
+    runs-on: ubuntu-latest
+    
+    env:
+      buildConfiguration: 'Prerelease'
+
+    steps:
+    - name: Make build number
+      id: generate_build_number
+      run: |
+        echo "build_num=$(date +'%Y.%m.%d').$(( $(date +'%H') + $(date +'%M') + $(date +'%S') + $(date +'%3N') ))" >> "$GITHUB_OUTPUT"
+    - name: Display build number
+      run: echo "$build_num"
+      env:
+        release_name: ${{ steps.generate_build_number.build_num }}
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build Data
+      run: dotnet build **/Data.csproj -c ${{env.buildConfiguration}} --no-restore
+    - name: Build SLC
+      run: dotnet build **/SharedLibraryCore.csproj -c ${{env.buildConfiguration}} /p:Version=${{env.release_name}} --no-restore
+    - name: Pack SLC
+      run: dotnet pack **/SharedLibraryCore.csproj -c ${{env.buildConfiguration}} --version-suffix ${{env.release_name}}
+
+    - name: Publish nuget package artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: SharedLibraryCore.${{env.release_name}}.nupkg
+        path: '**/RaidMax.IW4MAdmin.SharedLibraryCore.${{env.release_name}}.nupkg'

@@ -434,6 +434,7 @@ namespace SharedLibraryCore
 
         public abstract Task<long> GetIdForServer(Server server = null);
 
+        [Obsolete("Use the ScriptPluginExtension helper")]
         public EFClient GetClientByNumber(int clientNumber) =>
             GetClientsAsList().FirstOrDefault(client => client.ClientNumber == clientNumber);
     }

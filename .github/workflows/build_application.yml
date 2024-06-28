@@ -124,13 +124,17 @@ jobs:
         run: |
           cp ${{ github.workspace }}/Plugins/ScriptPlugins/*.js ${{ env.outputFolder }}/Plugins/
           cp ${{ github.workspace }}/BUILD/Plugins/*.dll ${{ env.outputFolder }}/Plugins/
-          mkdir ${{ env.outputFolder }}/wwwroot/css
+          mkdir -p ${{ env.outputFolder }}/wwwroot/css
           cp ${{ github.workspace }}/WebfrontCore/wwwroot/css/global.min.css ${{ env.outputFolder }}/wwwroot/css/global.min.css
-          mkdir ${{ env.outputFolder }}/wwwroot/js
+          mkdir -p ${{ env.outputFolder }}/wwwroot/js
           cp ${{ github.workspace }}/WebfrontCore/wwwroot/js/global.min.js ${{ env.outputFolder }}/wwwroot/js/global.min.js
-          rsync -a ${{ github.workspace }}/WebfrontCore/font/ ${{ env.outputFolder }}/wwwroot/font/
-          rsync -a ${{ github.workspace }}/GameFiles/ ${{ env.outputFolder }}/
-          rsync -a ${{ github.workspace }}/BUILD/Plugins/wwwroot/ ${{ env.outputFolder }}/wwwroot/
+          mkdir -p ${{ env.outputFolder }}/wwwroot/font
+          rsync -ar ${{ github.workspace }}/WebfrontCore/wwwroot/lib/open-iconic/font/fonts/ ${{ env.outputFolder }}/wwwroot/font
+          mkdir -p ${{ env.outputFolder }}/GameFiles
+          rsync -ar ${{ github.workspace }}/GameFiles/ ${{ env.outputFolder }}/GameFiles
+          mkdir -p ${{ env.outputFolder }}/wwwroot/images/
+          rsync -ar ${{ github.workspace }}/WebfrontCore/wwwroot/images/ ${{ env.outputFolder }}/wwwroot/images/
+          rsync -ar ${{ github.workspace }}/BUILD/Plugins/wwwroot/ ${{ env.outputFolder }}/wwwroot/
 
       - name: Upload artifact for analysis
         uses: actions/upload-artifact@v4

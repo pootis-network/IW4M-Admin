@@ -73,8 +73,8 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Debug powershell.exe $(ProjectDir)BuildScripts\PreBuild.ps1 $(SolutionDir) $(TargetDir)" />
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(ConfigurationName)'=='Debug'">
+    <Exec Command="powershell.exe $(ProjectDir)BuildScripts\PreBuild.ps1 $(SolutionDir) $(TargetDir)" />
   </Target>
   
 </Project>

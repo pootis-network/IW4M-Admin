@@ -36,7 +36,7 @@ jobs:
       
     env:
       buildNumber: ${{ needs.make_version.outputs.build_num }}
-      packageTag: ${{ github.event_name == 'pull_request' && -beta || -preview }}
+      packageTag: ${{ github.event_name == 'pull_request' && '-beta' || '-preview' }}
       buildConfiguration: Prerelease
       
     steps:
@@ -70,7 +70,7 @@ jobs:
     
     needs: [ make_version, build_pack ]
     environment: prerelease
-    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release/pre' || github.ref == 'refs/heads/release/develop' }}
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release/pre' || github.ref == 'refs/heads/develop' }}
     
     steps:
       - name: Download artifact

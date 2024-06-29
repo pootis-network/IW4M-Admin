@@ -26,7 +26,9 @@ jobs:
       - name: Make build number
         id: generate_build_number
         run: |
-          build_num=$(date +'%Y.%-m.%-d').$(date +'%3N' | sed 's/^0*//')
+          run_number=$(git log --since=$(date +'%Y-%m-%dT00:00:00') --oneline | grep -c 'workflow_run')
+          run_number=$((run_number + 1))
+          build_num=$(date +'%Y.%-m.%-d').$(run_number)
           echo "build_num=$build_num" >> $GITHUB_OUTPUT
           echo "Build number is $build_num"
           

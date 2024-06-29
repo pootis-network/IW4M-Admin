@@ -55,7 +55,7 @@ namespace IW4MAdmin.Application.Misc
                 var decryptedContent = new byte[encryptedContent.Length];
 
                 var keyGen = new Rfc2898DeriveBytes(Encoding.UTF8.GetBytes(_appconfig.SubscriptionId), Encoding.UTF8.GetBytes(_appconfig.Id), IterationCount, HashAlgorithmName.SHA512);
-                var encryption = new AesGcm(keyGen.GetBytes(KeyLength));
+                var encryption = new AesGcm(keyGen.GetBytes(KeyLength),TagLength);
 
                 try
                 {

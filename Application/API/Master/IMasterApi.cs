@@ -65,6 +65,6 @@ public interface IMasterApi
     Task<SharedLibraryCore.Localization.Layout> GetLocalization(string languageTag);
 
     [Get("/plugin_subscriptions")]
-    Task<IEnumerable<PluginSubscriptionContent>> GetPluginSubscription([Query("instance_id")] Guid instanceId,
-        [Query("subscription_id")] string subscription_id);
+    Task<IEnumerable<PluginSubscriptionContent>> GetPluginSubscription([Query] string instance_id,
+        [Query] string subscription_id);
 }

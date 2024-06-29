@@ -167,7 +167,7 @@ namespace IW4MAdmin.Application.Plugin
             try
             {
                 _pluginSubscription ??= _masterApi
-                    .GetPluginSubscription(Guid.Parse(_appConfig.Id), _appConfig.SubscriptionId).Result;
+                    .GetPluginSubscription(_appConfig.Id, _appConfig.SubscriptionId).Result;
 
                 return _remoteAssemblyHandler.DecryptAssemblies(_pluginSubscription
                     .Where(sub => sub.Type == PluginType.Binary).Select(sub => sub.Content).ToArray());
@@ -185,7 +185,7 @@ namespace IW4MAdmin.Application.Plugin
             try
             {
                 _pluginSubscription ??= _masterApi
-                    .GetPluginSubscription(Guid.Parse(_appConfig.Id), _appConfig.SubscriptionId).Result;
+                    .GetPluginSubscription(_appConfig.Id, _appConfig.SubscriptionId).Result;
 
                 return _remoteAssemblyHandler.DecryptScripts(_pluginSubscription
                     .Where(sub => sub.Type == PluginType.Script).Select(sub => sub.Content).ToArray());

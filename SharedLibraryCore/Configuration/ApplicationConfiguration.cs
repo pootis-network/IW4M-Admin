@@ -22,7 +22,7 @@ namespace SharedLibraryCore.Configuration
         public bool EnableWebFront { get; set; }
 
         [LocalizedDisplayName("WEBFRONT_CONFIGURATION_BIND_URL")]
-        public string WebfrontBindUrl { get; set; }
+        public string WebfrontBindUrl { get; set; } = "http://0.0.0.0:1624";
 
         [ConfigurationOptional]
         [LocalizedDisplayName("WEBFRONT_CONFIGURATION_MANUAL_URL")]

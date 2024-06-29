@@ -5,6 +5,10 @@ on:
     branches: [ develop, release/pre, master ]
     paths:
       - Application/**
+      - WebfrontCore/**
+      - Data/**
+      - SharedLibraryCore/**
+      - Plugins/**
       - .github/workflows/build_application.yml
   pull_request:
     branches: [ develop ]

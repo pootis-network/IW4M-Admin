@@ -14,6 +14,10 @@ on:
     branches: [ develop ]
     paths:
       - Application/**
+      - WebfrontCore/**
+      - Data/**
+      - SharedLibraryCore/**
+      - Plugins/**
 
 env:
   releaseType: prerelease

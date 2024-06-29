@@ -1,5 +1,5 @@
 ﻿using Data.Models;
-using Data.Models.Client;
+using SharedLibraryCore.Database.Models;
 
 namespace SharedLibraryCore.Events.Management;
 

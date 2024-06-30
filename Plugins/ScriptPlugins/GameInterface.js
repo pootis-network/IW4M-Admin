@@ -94,7 +94,7 @@ const plugin = {
     onServerValueSetCompleted: async function (serverValueEvent) {
         this.logger.logDebug('Set {dvarName}={dvarValue} success={success} from {server}', serverValueEvent.valueName,
             serverValueEvent.value, serverValueEvent.success, serverValueEvent.server.id);
-        
+
         if (serverValueEvent.valueName !== inDvar && serverValueEvent.valueName !== outDvar) {
             this.logger.logDebug('Ignoring set complete of {name}', serverValueEvent.valueName);
             return;
@@ -124,7 +124,7 @@ const plugin = {
         // loop restarts
         this.requestGetDvar(inDvar, serverValueEvent.server);
     },
-    
+
     onServerMonitoringStart: function (monitorStartEvent) {
         this.initializeServer(monitorStartEvent.server);
     },
@@ -162,7 +162,7 @@ const plugin = {
         serverState.enabled = true;
         serverState.running = true;
         serverState.initializationInProgress = false;
-        
+
         // todo: this might not work for all games
         responseEvent.server.rconParser.configuration.floodProtectInterval = 150;
 
@@ -233,7 +233,7 @@ const plugin = {
 
         // todo: refactor to mapping if possible
         if (event.eventType === 'ClientDataRequested') {
-            const client = server.getClientByNumber(event.clientNumber);
+            const client = server.connectedClients[event.clientNumber];
 
             if (client != null) {
                 this.logger.logDebug('Found client {name}', client.name);
@@ -269,8 +269,9 @@ const plugin = {
             }
         }
 
+        let _;
         if (event.eventType === 'SetClientDataRequested') {
-            let client = server.getClientByNumber(event.clientNumber);
+            let client = server.connectedClients[event.clientNumber];
             let clientId;
 
             if (client != null) {
@@ -298,12 +299,12 @@ const plugin = {
                                 const parsedValue = parseInt(event.data['value']);
                                 const key = event.data['key'].toString();
                                 if (!isNaN(parsedValue)) {
-                                    event.data['direction'] == 'increment' ?
+                                    _ = event.data['direction'] === 'increment' ?
                                         (await metaService.incrementPersistentMeta(key, parsedValue, clientId, token)).result :
                                         (await metaService.decrementPersistentMeta(key, parsedValue, clientId, token)).result;
                                 }
                             } else {
-                                const _ = (await metaService.setPersistentMeta(event.data['key'], event.data['value'], clientId, token)).result;
+                                _ = (await metaService.setPersistentMeta(event.data['key'], event.data['value'], clientId, token)).result;
                             }
 
                             if (event.data['key'] === 'PersistentClientGuid') {
@@ -342,34 +343,34 @@ const plugin = {
                 if (typeof response !== 'string' && !(response instanceof String)) {
                     response = JSON.stringify(response);
                 }
-                
+
                 const max = 10;
                 this.logger.logDebug(`response length ${response.length}`);
-                
+
                 let quoteReplace = '\\"';
                 // todo: may be more than just T6
                 if (server.gameCode === 'T6') {
                     quoteReplace = '\\\\"';
                 }
-                
+
                 let chunks = chunkString(response.replace(/"/gm, quoteReplace).replace(/[\n|\t]/gm, ''), 800);
                 if (chunks.length > max) {
                     this.logger.logWarning(`Response chunks greater than max (${max}). Data truncated!`);
                     chunks = chunks.slice(0, max);
                 }
                 this.logger.logDebug(`chunk size ${chunks.length}`);
-                
+
                 for (let i = 0; i < chunks.length; i++) {
                     this.sendEventMessage(server, false, 'UrlRequestCompleted', null, null,
-                        null, { entity: event.data.entity, remaining: chunks.length - (i + 1), response: chunks[i]});
+                        null, {entity: event.data.entity, remaining: chunks.length - (i + 1), response: chunks[i]});
                 }
             });
         }
-        
+
         if (event.eventType === 'RegisterCommandRequested') {
             this.registerDynamicCommand(event);
         }
-        
+
         if (event.eventType === 'GetBusModeRequested') {
             if (event.data?.directory && event.data?.mode) {
                 busMode = event.data.mode;
@@ -433,10 +434,10 @@ const plugin = {
                     });
                 }
             });
-            
+
             return;
         }
-        
+
         const serverEvents = importNamespace('SharedLibraryCore.Events.Server');
         const requestEvent = new serverEvents.ServerValueRequestEvent(dvarName, server);
         requestEvent.delayMs = this.config.pollingRate;
@@ -467,8 +468,8 @@ const plugin = {
 
     requestSetDvar: function (dvarName, dvarValue, server) {
         const serverState = servers[server.id];
-        
-        if ( busMode === 'file' ) {
+
+        if (busMode === 'file') {
             this.scriptHelper.requestNotifyAfterDelay(250, async () => {
                 const io = importNamespace('System.IO');
                 try {
@@ -493,7 +494,7 @@ const plugin = {
                     });
                 }
             })
-            
+
             return;
         }
 
@@ -526,7 +527,7 @@ const plugin = {
         }
     },
 
-    parseUrlRequest: function(event) {
+    parseUrlRequest: function (event) {
         const url = event.data?.url;
 
         if (url === undefined) {
@@ -556,8 +557,8 @@ const plugin = {
         const script = importNamespace('IW4MAdmin.Application.Plugin.Script');
         return new script.ScriptPluginWebRequest(url, body, method, contentType, headerDict);
     },
-    
-    registerDynamicCommand: function(event) {
+
+    registerDynamicCommand: function (event) {
         const commandWrapper = {
             commands: [{
                 name: event.data['name'] || 'DEFAULT',
@@ -571,9 +572,9 @@ const plugin = {
                     if (!validateEnabled(gameEvent.owner, gameEvent.origin)) {
                         return;
                     }
-                    
+
                     if (gameEvent.data === '--reload' && gameEvent.origin.level === 'Owner') {
-                        this.sendEventMessage(gameEvent.owner, true, 'GetCommandsRequested', null, null, null, { name: gameEvent.extra.name });
+                        this.sendEventMessage(gameEvent.owner, true, 'GetCommandsRequested', null, null, null, {name: gameEvent.extra.name});
                     } else {
                         sendScriptCommand(gameEvent.owner, `${event.data['eventKey']}Execute`, gameEvent.origin, gameEvent.target, {
                             args: gameEvent.data
@@ -582,7 +583,7 @@ const plugin = {
                 }
             }]
         }
-        
+
         this.scriptHelper.registerDynamicCommand(commandWrapper);
     }
 };
@@ -920,6 +921,6 @@ const fileForDvar = (dvar) => {
     if (dvar === inDvar) {
         return busFileIn;
     }
-    
+
     return busFileOut;
 }

@@ -29,10 +29,15 @@ jobs:
       build_num: ${{ steps.generate_build_number.outputs.build_num }}
     
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+          
       - name: Make build number
         id: generate_build_number
         run: |
-          build_num=$(date +'%Y.%-m.%-d').$(date +'%3N' | sed 's/^0*//')
+          today=$(date +%Y-%m-%d)
+          commit_count=$(git rev-list --count --since="$today 00:00:00" --until="$today 23:59:59")
+          build_num=$(date +'%Y.%-m.%-d').$(commit_count)
           echo "build_num=$build_num" >> $GITHUB_OUTPUT
           echo "Build number is $build_num"
   
@@ -50,9 +55,6 @@ jobs:
       buildNumber: ${{ needs.make_version.outputs.build_num }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:

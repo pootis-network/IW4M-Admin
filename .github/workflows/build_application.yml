@@ -205,7 +205,7 @@ jobs:
       - name: Upload artifact for analysis
         uses: actions/upload-artifact@v4
         with:
-          name: IW4MAdmin-${{ env.buildNumber }}
+          name: IW4MAdmin-${{ env.buildNumber }}-${{ env.releaseType }}
           path: ${{ env.outputFolder }}
   
   release_github:
@@ -223,7 +223,7 @@ jobs:
       - name: Download build
         uses: actions/download-artifact@v4
         with:
-          name: IW4MAdmin-${{ env.buildNumber }}
+          name: IW4MAdmin-${{ env.buildNumber }}-${{ env.releaseType }}
           path: ${{ github.workspace }}
 
       - name: Zip build
@@ -234,7 +234,7 @@ jobs:
         with:
           tag: ${{ env.buildNumber }}-${{ env.releaseType }}
           name: IW4MAdmin ${{ env.buildNumber }}
-          draft: true
+          draft: false
           prerelease: true
           body: Automated rolling release - changelog below. [Updating Instructions](https://github.com/RaidMax/IW4M-Admin/wiki/Getting-Started#updating)
           generateReleaseNotes: true

@@ -26,6 +26,7 @@ using Data.Abstractions;
 using Data.Context;
 using Data.Models;
 using IW4MAdmin.Application.Configuration;
+using IW4MAdmin.Application.IO;
 using IW4MAdmin.Application.Migration;
 using IW4MAdmin.Application.Plugin.Script;
 using Microsoft.Extensions.DependencyInjection;
@@ -68,6 +69,7 @@ namespace IW4MAdmin.Application
         private readonly ClientService ClientSvc;
         readonly PenaltyService PenaltySvc;
         private readonly IAlertManager _alertManager;
+        private readonly ConfigurationWatcher _watcher;
         public IConfigurationHandler<ApplicationConfiguration> ConfigHandler;
         readonly IPageList PageList;
         private readonly TimeSpan _throttleTimeout = new TimeSpan(0, 1, 0);
@@ -94,7 +96,8 @@ namespace IW4MAdmin.Application
             IEnumerable<IPlugin> plugins, IParserRegexFactory parserRegexFactory, IEnumerable<IRegisterEvent> customParserEvents,
             ICoreEventHandler coreEventHandler, IScriptCommandFactory scriptCommandFactory, IDatabaseContextFactory contextFactory,
             IMetaRegistration metaRegistration, IScriptPluginServiceResolver scriptPluginServiceResolver, ClientService clientService, IServiceProvider serviceProvider,
-            ChangeHistoryService changeHistoryService, ApplicationConfiguration appConfig, PenaltyService penaltyService, IAlertManager alertManager, IInteractionRegistration interactionRegistration, IEnumerable<IPluginV2> v2PLugins)
+            ChangeHistoryService changeHistoryService, ApplicationConfiguration appConfig, PenaltyService penaltyService, IAlertManager alertManager, IInteractionRegistration interactionRegistration, IEnumerable<IPluginV2> v2PLugins,
+            ConfigurationWatcher watcher)
         {
             MiddlewareActionHandler = actionHandler;
             _servers = new ConcurrentBag<Server>();
@@ -102,10 +105,11 @@ namespace IW4MAdmin.Application
             ClientSvc = clientService;
             PenaltySvc = penaltyService;
             _alertManager = alertManager;
+            _watcher = watcher;
             ConfigHandler = appConfigHandler;
             StartTime = DateTime.UtcNow;
             PageList = new PageList();
-            AdditionalEventParsers = new List<IEventParser> { new BaseEventParser(parserRegexFactory, logger, _appConfig) };
+            AdditionalEventParsers = new List<IEventParser> { new BaseEventParser(parserRegexFactory, logger, _appConfig, serviceProvider.GetRequiredService<IGameScriptEventFactory>()) };
             AdditionalRConParsers = new List<IRConParser> { new BaseRConParser(serviceProvider.GetRequiredService<ILogger<BaseRConParser>>(), parserRegexFactory) };
             TokenAuthenticator = new TokenAuthentication();
             _logger = logger;
@@ -529,6 +533,7 @@ namespace IW4MAdmin.Application
             
             Console.WriteLine(_translationLookup["MANAGER_COMMUNICATION_INFO"]);
             await InitializeServers();
+            _watcher.Enable();
             IsInitialized = true;
         }
 
@@ -710,7 +715,7 @@ namespace IW4MAdmin.Application
 
         public IEventParser GenerateDynamicEventParser(string name)
         {
-            return new DynamicEventParser(_parserRegexFactory, _logger, ConfigHandler.Configuration())
+            return new DynamicEventParser(_parserRegexFactory, _logger, ConfigHandler.Configuration(), _serviceProvider.GetRequiredService<IGameScriptEventFactory>())
             {
                 Name = name
             };

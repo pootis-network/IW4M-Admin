@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
     <PackageId>RaidMax.IW4MAdmin.Application</PackageId>
     <Version>2020.0.0.0</Version>
@@ -21,20 +21,21 @@
     <Win32Resource />
     <RootNamespace>IW4MAdmin.Application</RootNamespace>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jint" Version="3.0.0-beta-2049" />
-    <PackageReference Include="MaxMind.GeoIP2" Version="5.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+    <PackageReference Include="Jint" Version="3.1.3" />
+    <PackageReference Include="MaxMind.GeoIP2" Version="5.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="RestEase" Version="1.5.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Refit" Version="7.1.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageReference Include="System.CommandLine.DragonFruit" Version="0.4.0-alpha.22272.1" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -72,18 +73,8 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="if $(ConfigurationName) == Debug call $(ProjectDir)BuildScripts\PreBuild.bat $(ProjectDir)..\ $(ProjectDir) $(TargetDir) $(OutDir)" />
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(ConfigurationName)'=='Debug'">
+    <Exec Command="powershell.exe $(ProjectDir)BuildScripts\PreBuild.ps1 $(SolutionDir) $(TargetDir)" />
   </Target>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-      <Output TaskParameter="Assemblies" ItemName="CurrentAssembly" />
-    </GetAssemblyIdentity>
-    <Exec Command="if $(ConfigurationName) == Debug call $(ProjectDir)BuildScripts\PostBuild.bat $(ProjectDir)..\ $(ProjectDir) $(TargetDir) $(OutDir) %25(CurrentAssembly.Version)" />
-  </Target>
-
-  <Target Name="PostPublish" AfterTargets="Publish">
-    <Exec Command="if $(ConfigurationName) == Debug call $(ProjectDir)BuildScripts\PostPublish.bat $(ProjectDir)..\ $(ProjectDir) $(TargetDir) $(ConfigurationName)" />
-  </Target>
+  
 </Project>

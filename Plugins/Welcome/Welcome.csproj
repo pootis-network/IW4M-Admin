@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
     <PackageId>RaidMax.IW4MAdmin.Plugins.Welcome</PackageId>
@@ -15,12 +15,8 @@
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet publish $(ProjectPath) -c $(ConfigurationName) -o $(ProjectDir)..\..\Build\Plugins --no-build --no-restore --no-dependencies" />
-  </Target>
-
   <ItemGroup>
-    <PackageReference Include="RaidMax.IW4MAdmin.SharedLibraryCore" Version="2024.2.5.3" PrivateAssets="All" />
+    <PackageReference Include="RaidMax.IW4MAdmin.SharedLibraryCore" Version="2024.6.22.1" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,6 @@ using SharedLibraryCore;
 using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Interfaces;
 using System.Linq;
-using System.Threading.Tasks;
 using IW4MAdmin.Plugins.LiveRadar.Configuration;
 using Microsoft.AspNetCore.Http;
 
@@ -82,7 +81,7 @@ namespace IW4MAdmin.Plugins.LiveRadar.Web.Controllers
             }
             
             var radarInfo = server.GetClientsAsList()
-                .Select(client => client.GetAdditionalProperty<RadarEvent>("LiveRadar")).ToList();
+                .Select(client => client.GetAdditionalProperty<RadarDto>("LiveRadar")).ToList();
             
             return Json(radarInfo);
         }

@@ -3,9 +3,9 @@
     "outputFileName": "wwwroot/css/global.min.css",
     "inputFiles": [
       "wwwroot/lib/halfmoon/css/halfmoon-variables.min.css",
-      "wwwroot/css/global.css",
       "wwwroot/lib/chart.js/dist/Chart.min.css",
-      "wwwroot/css/open-iconic.css"
+      "wwwroot/css/open-iconic-bootstrap-override.css",
+      "wwwroot/css/main.css"
     ]
   },
   {

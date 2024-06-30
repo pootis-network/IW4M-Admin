@@ -26,6 +26,11 @@ public class InteractionController : BaseController
             return NotFound();
         }
 
+        if (Client.Level < interactionData.MinimumPermission)
+        {
+            return Unauthorized();
+        }
+
         ViewBag.Title = interactionData.Description;
         var meta = HttpContext.Request.Query.ToDictionary(key => key.Key, value => value.Value.ToString());
         var result = await _interactionRegistration.ProcessInteraction(interactionName, Client.ClientId, meta: meta, token: token);

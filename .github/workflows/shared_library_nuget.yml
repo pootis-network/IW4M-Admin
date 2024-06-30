@@ -1,0 +1,93 @@
+name: SharedLibraryCore NuGet
+
+on:
+  push:
+    branches: [ develop, release/pre, master ]
+    paths:
+      - SharedLibraryCore/**
+      - Data/**
+      - .github/workflows/shared_library_nuget.yml
+  pull_request:
+    branches: [ develop ]
+    paths:
+      - SharedLibraryCore/**
+      - Data/**
+
+env:
+  outputDirectory: ${{ github.workspace}}/nuget
+
+jobs:
+  make_version:
+    runs-on: ubuntu-latest
+    outputs:
+      build_num: ${{ steps.generate_build_number.outputs.build_num }}
+
+    steps:
+      - name: Make build number
+        id: generate_build_number
+        run: |
+          run_number=$(git log --since=$(date +'%Y-%m-%dT00:00:00') --oneline | grep -c 'workflow_run')
+          run_number=$((run_number + 1))
+          build_num=$(date +'%Y.%-m.%-d').$(run_number)
+          echo "build_num=$build_num" >> $GITHUB_OUTPUT
+          echo "Build number is $build_num"
+          
+  build_pack:
+    runs-on: ubuntu-latest
+    needs: [ make_version ]
+      
+    env:
+      buildNumber: ${{ needs.make_version.outputs.build_num }}
+      packageTag: ${{ github.event_name == 'pull_request' && '-beta' || '-preview' }}
+      buildConfiguration: Prerelease
+      
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+          
+      - name: Restore dependencies
+        run: dotnet restore
+        
+      - name: Build data
+        run: dotnet build **/Data.csproj -c ${{env.buildConfiguration}} /p:Version=${{ env.buildNumber }} --no-restore
+        
+      - name: Build SLC
+        run: dotnet build **/SharedLibraryCore.csproj -c ${{env.buildConfiguration}} /p:Version=${{ env.buildNumber }} --no-restore
+        
+      - name: Pack SLC
+        run: dotnet pack **/SharedLibraryCore.csproj -c ${{env.buildConfiguration}} -p:PackageVersion=${{ env.buildNumber }}${{ env.packageTag }} -o ${{ env.outputDirectory }} --no-restore
+
+      - name: Publish nuget package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SharedLibraryCore-${{ env.buildNumber }}
+          path: ${{ env.outputDirectory }}/*.nupkg
+  
+  publish:
+    runs-on: ubuntu-latest
+    
+    needs: [ make_version, build_pack ]
+    environment: prerelease
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release/pre' || github.ref == 'refs/heads/develop' }}
+    
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: SharedLibraryCore-${{ needs.make_version.outputs.build_num }}
+          path: ${{ env.outputDirectory }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish NuGet package
+        run: |
+          for file in ${{ env.outputDirectory }}/*.nupkg; do
+            dotnet nuget push "$file" --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done

@@ -8,6 +8,7 @@ using System.Linq;
 using Data.Models;
 using Microsoft.Extensions.Logging;
 using SharedLibraryCore.Events.Game;
+using SharedLibraryCore.Interfaces.Events;
 using static System.Int32;
 using static SharedLibraryCore.Server;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -21,16 +22,18 @@ namespace IW4MAdmin.Application.EventParsers
 
         private readonly ILogger _logger;
         private readonly ApplicationConfiguration _appConfig;
+        private readonly IGameScriptEventFactory _gameScriptEventFactory;
         private readonly Dictionary<ParserRegex, GameEvent.EventType> _regexMap;
         private readonly Dictionary<string, GameEvent.EventType> _eventTypeMap;
 
         public BaseEventParser(IParserRegexFactory parserRegexFactory, ILogger logger,
-            ApplicationConfiguration appConfig)
+            ApplicationConfiguration appConfig, IGameScriptEventFactory gameScriptEventFactory)
         {
             _customEventRegistrations =
                 new Dictionary<string, (string, Func<string, IEventParserConfiguration, GameEvent, GameEvent>)>();
             _logger = logger;
             _appConfig = appConfig;
+            _gameScriptEventFactory = gameScriptEventFactory;
 
             Configuration = new DynamicEventParserConfiguration(parserRegexFactory)
             {
@@ -183,13 +186,27 @@ namespace IW4MAdmin.Application.EventParsers
             
             if (logLine.StartsWith("GSE;"))
             {
-                return new GameScriptEvent
+                var gscEvent = new GameScriptEvent
                 {
                     ScriptData = logLine,
                     GameTime = gameTime,
                     Source = GameEvent.EventSource.Log
                 };
+                return gscEvent;
             }
+
+            var split = logLine.Split(";", StringSplitOptions.RemoveEmptyEntries);
+
+            if (split.Length > 1)
+            {
+                var createdEvent = _gameScriptEventFactory.Create(split[0], logLine.Replace(split[0], ""));
+                if (createdEvent is not null)
+                {
+                    createdEvent.ParseArguments();
+                    return createdEvent as GameEventV2;
+                }
+            }
+            
 
             if (eventKey is null || !_customEventRegistrations.ContainsKey(eventKey))
             {
@@ -218,12 +235,13 @@ namespace IW4MAdmin.Application.EventParsers
             return GenerateDefaultEvent(logLine, gameTime);
         }
 
-        private static GameEvent GenerateDefaultEvent(string logLine, long gameTime)
+        private static GameLogEvent GenerateDefaultEvent(string logLine, long gameTime)
         {
-            return new GameEvent
+            return new GameLogEvent
             {
                 Type = GameEvent.EventType.Unknown,
                 Data = logLine,
+                LogLine = logLine,
                 Origin = Utilities.IW4MAdminClient(),
                 Target = Utilities.IW4MAdminClient(),
                 RequiredEntity = GameEvent.EventRequiredEntity.None,

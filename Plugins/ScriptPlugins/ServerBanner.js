@@ -9,7 +9,7 @@ const serverOrderCache = [];
 
 const plugin = {
     author: 'RaidMax',
-    version: '1.0',
+    version: '1.1',
     name: 'Server Banner',
     serviceResolver: null,
     scriptHelper: null,
@@ -26,6 +26,9 @@ const plugin = {
         this.manager = serviceResolver.resolveService('IManager');
         this.logger = serviceResolver.resolveService('ILogger', ['ScriptPluginV2']);
         this.webfrontUrl = serviceResolver.resolveService('ApplicationConfiguration').webfrontUrl;
+
+        this.logger.logInformation('{Name} {Version} by {Author} loaded,', this.name, this.version,
+            this.author);
     },
 
     onServerMonitoringStart: function (startEvent) {
@@ -123,11 +126,13 @@ const plugin = {
                     },
                 };
 
-                plugin.manager.getServers().forEach(eachServer => {
-                    if (eachServer.id === serverId) {
-                        server = eachServer;
+                const servers = plugin.manager.servers;
+                for (let i = 0; i < servers.length; i++) {
+                    if (servers[i].id === serverId) {
+                        server = servers[i];
+                        break;
                     }
-                });
+                }
 
                 if (serverLocationCache[server.listenAddress] === undefined) {
                     plugin.onServerMonitoringStart({
@@ -280,7 +285,7 @@ const plugin = {
                                     <div class="server-container small" id="server">
                                         <div class="first-line small"> 
                                             <div class="game-icon small"></div>
-                                            <div class="header" style="${colorLeft}">${server.serverName.stripColors()}</div>
+                                            <div class="header" id="serverName" style="${colorLeft}"></div>
                                         </div>
                                         <div class="third-line game-info small">
                                             ${status}
@@ -298,6 +303,10 @@ const plugin = {
                                             </div>
                                         </div> 
                                     </div>
+                                    <script>
+                                        const serverNameElem = document.getElementById('serverName');
+                                        serverNameElem.textContent = '${server.serverName.stripColors()}';
+                                    </script>
                                 </body>
                             </html>`;
                 }
@@ -310,7 +319,7 @@ const plugin = {
                                             style="background: url('https://raidmax.org/resources/images/icons/games/${gameCode}.jpg');">
                                         </div>
                                         <div style="flex: 1; ${colorLeft}" class="game-info large">
-                                            <div class="header">${server.serverName.stripColors()}</div>
+                                            <div class="header" id="serverName"></div>
                                             <div class="text-weight-lighter subtitle">${displayIp}:${server.listenPort}</div>
                                             <div class="players-flag-section">
                                                 <div class="subtitle">${server.throttled ? '-' : server.clientNum}/${server.maxClients} Players</div>
@@ -324,6 +333,10 @@ const plugin = {
                                             ${status}
                                         </div>
                                 </div>
+                                <script>
+                                    const serverNameElem = document.getElementById('serverName');
+                                    serverNameElem.textContent = '${server.serverName.stripColors()}';
+                                </script>
                             </body>
                         </html>`;
             };
@@ -346,22 +359,24 @@ const plugin = {
 
             interactionData.scriptAction = (_, __, ___, ____, _____) => {
                 if (Object.keys(serverOrderCache).length === 0) {
-                    plugin.manager.getServers().forEach(server => {
+                    for (let i = 0; i < plugin.manager.servers.length; i++) {
+                        const server = plugin.manager.servers[i];
                         plugin.onServerMonitoringStart({
                             server: server
                         });
-                    });
+                    }
                 }
 
                 let response = '<div class="d-flex flex-row flex-wrap" style="margin-left: -1rem; margin-top: -1rem;">';
                 Object.keys(serverOrderCache).forEach(key => {
                     const servers = serverOrderCache[key];
-                    servers.forEach(eachServer => {
+                    for (let i = 0; i < servers.length; i++) {
+                        const eachServer = servers[i];
                         response += `<div class="w-full w-xl-half">
                                         <div class="card m-10 p-20">
                                         <div class="font-size-16 mb-10">
                                             <div class="badge ml-10 float-right font-size-16">${eachServer.gameCode}</div>
-                                            ${eachServer.serverName.stripColors()}
+                                            <div id="serverName"></div>
                                         </div>
                                  
                                         <div style="overflow: hidden">
@@ -387,8 +402,12 @@ const plugin = {
                                             <br/>&nbsp;width="400" height="70" style="border-width: 0; overflow: hidden;"&gt;<br/>
                                             &lt;/iframe&gt;</div>
                                         </div>
-                                    </div>`;
-                    });
+                                    </div>
+                                    <script>
+                                        const serverNameElem = document.getElementById('serverName');
+                                        serverNameElem.textContent = '${eachServer.serverName.stripColors()}';
+                                    </script>`;
+                    }
                 });
 
                 response += '</div>';

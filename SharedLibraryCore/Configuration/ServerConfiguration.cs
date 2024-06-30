@@ -9,15 +9,8 @@ namespace SharedLibraryCore.Configuration
 {
     public class ServerConfiguration : IBaseConfiguration
     {
-        private readonly IList<IRConParser> _rconParsers;
+        private readonly IList<IRConParser> _rconParsers = new List<IRConParser>();
         private IRConParser _selectedParser;
-
-        public ServerConfiguration()
-        {
-            _rconParsers = new List<IRConParser>();
-            Rules = new string[0];
-            AutoMessages = new string[0];
-        }
 
         [LocalizedDisplayName("WEBFRONT_CONFIGURATION_SERVER_IP")]
         public string IPAddress { get; set; }
@@ -29,10 +22,10 @@ namespace SharedLibraryCore.Configuration
         public string Password { get; set; }
 
         [LocalizedDisplayName("WEBFRONT_CONFIGURATION_SERVER_RULES")]
-        public string[] Rules { get; set; } = new string[0];
+        public string[] Rules { get; set; } = [];
 
         [LocalizedDisplayName("WEBFRONT_CONFIGURATION_SERVER_AUTO_MESSAGES")]
-        public string[] AutoMessages { get; set; } = new string[0];
+        public string[] AutoMessages { get; set; } = [];
 
         [LocalizedDisplayName("WEBFRONT_CONFIGURATION_SERVER_PATH")]
         [ConfigurationOptional]
@@ -88,7 +81,7 @@ namespace SharedLibraryCore.Configuration
                     var passwords = _selectedParser.TryGetRConPasswords();
                     if (passwords.Length > 1)
                     {
-                        var (index, value) =
+                        var (index, _) =
                             loc["SETUP_RCON_PASSWORD_PROMPT"].PromptSelection(loc["SETUP_RCON_PASSWORD_MANUAL"], null,
                                 passwords.Select(pw =>
                                         $"{pw.Item1}{(string.IsNullOrEmpty(pw.Item2) ? "" : "        " + pw.Item2)}")
@@ -113,9 +106,8 @@ namespace SharedLibraryCore.Configuration
                 Password = loc["SETUP_SERVER_RCON"].PromptString();
             }
 
-            AutoMessages = new string[0];
-            Rules = new string[0];
-            ManualLogPath = null;
+            AutoMessages = [];
+            Rules = [];
 
             return this;
         }

@@ -22,6 +22,7 @@ if [ -f "$PublishDir/libman.json" ]; then rm "$PublishDir/libman.json"; fi
 rm -f "$PublishDir"/*.exe
 rm -f "$PublishDir"/*.pdb
 rm -f "$PublishDir"/IW4MAdmin
+rm -f "$PublishDir"/*.xml
 
 echo "Setting up default folders"
 mkdir -p "$PublishDir/Plugins"

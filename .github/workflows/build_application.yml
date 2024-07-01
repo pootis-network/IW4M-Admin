@@ -9,6 +9,7 @@ on:
       - Data/**
       - SharedLibraryCore/**
       - Plugins/**
+      - .github/workflows/build_application.yml
   pull_request:
     branches: [ develop ]
     paths:
@@ -167,7 +168,7 @@ jobs:
       - name: Download geolocation database
         run: |
           mkdir -p ${{ env.outputFolder }}/Resources
-          curl -s https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb -o ${{ env.outputFolder }}/Resources/GeoLite2-Country.mmdb --clobber
+          wget -O ${{ env.outputFolder }}/Resources/GeoLite2-Country.mmdb https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb
           
       - name: Clean up publish files
         run: |

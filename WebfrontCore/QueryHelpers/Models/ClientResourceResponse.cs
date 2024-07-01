@@ -2,7 +2,7 @@
 using Data.Models;
 using Data.Models.Client;
 
-namespace WebfrontCore.QueryHelpers.Models;
+namespace IW4MAdmin.WebfrontCore.QueryHelpers.Models;
 
 public class ClientResourceResponse
 {

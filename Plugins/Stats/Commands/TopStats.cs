@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using SharedLibraryCore;
-using System.Collections.Generic;
 using IW4MAdmin.Plugins.Stats.Helpers;
+using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
 using SharedLibraryCore.Interfaces;
 using EFClient = Data.Models.Client.EFClient;

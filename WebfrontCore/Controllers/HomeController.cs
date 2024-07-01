@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using SharedLibraryCore;
-using SharedLibraryCore.Dtos;
-using SharedLibraryCore.Interfaces;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Data.Models;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SharedLibraryCore;
+using SharedLibraryCore.Dtos;
+using SharedLibraryCore.Interfaces;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers
 {
     public class HomeController : BaseController
     {

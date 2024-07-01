@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Interfaces;
 
-namespace WebfrontCore.Controllers;
+namespace IW4MAdmin.WebfrontCore.Controllers;
 
 public class InteractionController : BaseController
 {

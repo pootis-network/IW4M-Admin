@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace WebfrontCore.Middleware
+namespace IW4MAdmin.WebfrontCore.Middleware
 {
     /// <summary>
     /// Defines the middleware functioning to whitelist connection from 

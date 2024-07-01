@@ -1,25 +1,24 @@
-﻿using IW4MAdmin.Plugins.Stats;
-using IW4MAdmin.Plugins.Stats.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SharedLibraryCore;
-using SharedLibraryCore.Dtos;
-using SharedLibraryCore.Dtos.Meta.Responses;
-using SharedLibraryCore.Interfaces;
-using Stats.Dtos;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Data.Abstractions;
-using Stats.Config;
-using WebfrontCore.QueryHelpers.Models;
+using IW4MAdmin.Plugins.Stats.Config;
+using IW4MAdmin.Plugins.Stats.Dtos;
+using IW4MAdmin.Plugins.Stats.Helpers;
+using IW4MAdmin.WebfrontCore.QueryHelpers.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using SharedLibraryCore;
+using SharedLibraryCore.Dtos;
+using SharedLibraryCore.Dtos.Meta.Responses;
+using SharedLibraryCore.Interfaces;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace IW4MAdmin.Plugins.Web.StatsWeb.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers.Client.Legacy
 {
     public class StatsController : BaseController
     {

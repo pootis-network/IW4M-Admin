@@ -1,10 +1,10 @@
-﻿using SharedLibraryCore;
+﻿using System.Threading.Tasks;
+using SharedLibraryCore;
 using SharedLibraryCore.Commands;
 using SharedLibraryCore.Configuration;
 using SharedLibraryCore.Database.Models;
-using SharedLibraryCore.Interfaces;
-using System.Threading.Tasks;
 using SharedLibraryCore.Helpers;
+using SharedLibraryCore.Interfaces;
 
 namespace IW4MAdmin.Plugins.Login.Commands
 {

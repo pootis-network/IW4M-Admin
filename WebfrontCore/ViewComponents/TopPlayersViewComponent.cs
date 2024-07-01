@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using IW4MAdmin.Plugins.Stats;
+using IW4MAdmin.Plugins.Stats.Config;
 using IW4MAdmin.Plugins.Stats.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore.Interfaces;
-using Stats.Config;
+using Stats;
 
-namespace WebfrontCore.ViewComponents
+namespace IW4MAdmin.WebfrontCore.ViewComponents
 {
     public class TopPlayersViewComponent : ViewComponent
     {

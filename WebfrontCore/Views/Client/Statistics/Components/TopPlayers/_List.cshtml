@@ -1,6 +1,8 @@
-﻿@using IW4MAdmin.Plugins.Stats
-@using System.Text.Json
-@model List<IW4MAdmin.Plugins.Stats.Web.Dtos.TopStatsInfo>
+﻿@using System.Text.Json
+@using IW4MAdmin.Plugins.Stats
+@using SharedLibraryCore
+@using Stats
+@model List<IW4MAdmin.Plugins.Stats.Dtos.TopStatsInfo>
 @{
     Layout = null;
     var loc = Utilities.CurrentLocalization.LocalizationIndex.Set;

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using IW4MAdmin.WebfrontCore.Controllers.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
 using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Interfaces;
-using WebfrontCore.Controllers.API.Models;
 
-namespace WebfrontCore.Controllers.API
+namespace IW4MAdmin.WebfrontCore.Controllers.API
 {
     [ApiController]
     [Route("api/[controller]")]

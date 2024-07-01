@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using SharedLibraryCore.Interfaces;
 
-namespace WebfrontCore
+namespace IW4MAdmin.WebfrontCore
 {
     public class Program
     {

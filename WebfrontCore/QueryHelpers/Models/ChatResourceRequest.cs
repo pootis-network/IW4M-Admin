@@ -1,6 +1,6 @@
-﻿using Stats.Dtos;
+﻿using IW4MAdmin.Plugins.Stats.Dtos;
 
-namespace WebfrontCore.QueryHelpers.Models;
+namespace IW4MAdmin.WebfrontCore.QueryHelpers.Models;
 
 public class ChatResourceRequest : ChatSearchQuery
 {

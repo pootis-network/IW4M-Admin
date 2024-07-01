@@ -1,15 +1,17 @@
 ﻿@using SharedLibraryCore.Configuration
 @using Data.Models.Client.Stats
-@using Stats.Helpers
 @using Data.Models.Client
 @using Data.Models.Client.Stats.Reference
 @using Humanizer
 @using Humanizer.Localisation
-@using IW4MAdmin.Plugins.Stats
-@using WebfrontCore.ViewModels
 @using System.Text.Json
-@using IW4MAdmin.Plugins.Stats.Web.Dtos
-@model Stats.Dtos.AdvancedStatsInfo
+@using IW4MAdmin.Plugins.Stats
+@using IW4MAdmin.Plugins.Stats.Dtos
+@using IW4MAdmin.Plugins.Stats.Helpers
+@using IW4MAdmin.WebfrontCore.ViewModels
+@using SharedLibraryCore
+@using Stats
+@model IW4MAdmin.Plugins.Stats.Dtos.AdvancedStatsInfo
 
 @{
     ViewBag.Title = ViewBag.Localization["WEBFRONT_ADV_STATS_TITLE"];

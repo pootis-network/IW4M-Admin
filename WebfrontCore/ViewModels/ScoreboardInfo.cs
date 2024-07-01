@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Data.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SharedLibraryCore.Database.Models;
 
-namespace WebfrontCore.ViewModels
+namespace IW4MAdmin.WebfrontCore.ViewModels
 {
     public class ScoreboardInfo
     {

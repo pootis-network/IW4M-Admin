@@ -13,6 +13,7 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
+    <RootNamespace>IW4MAdmin.Plugins.LiveRadar</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

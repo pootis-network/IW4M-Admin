@@ -1,5 +1,4 @@
-﻿using SharedLibraryCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,6 +9,7 @@ using IW4MAdmin.Plugins.LiveRadar.Configuration;
 using IW4MAdmin.Plugins.LiveRadar.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
 using SharedLibraryCore.Events.Game;
 using SharedLibraryCore.Events.Server;

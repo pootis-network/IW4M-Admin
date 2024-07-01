@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedLibraryCore.Helpers;
-using SharedLibraryCore.Interfaces;
-using Stats.Dtos;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Abstractions;
 using Data.Models.Client.Stats;
+using IW4MAdmin.Plugins.Stats.Dtos;
+using Microsoft.EntityFrameworkCore;
+using SharedLibraryCore.Helpers;
+using SharedLibraryCore.Interfaces;
 
-namespace Stats.Helpers
+namespace IW4MAdmin.Plugins.Stats.Helpers
 {
     /// <summary>
     /// implementation for IResourceQueryHelper

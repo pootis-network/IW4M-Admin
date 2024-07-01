@@ -1,6 +1,6 @@
 ﻿using Data.Models.Client.Stats;
 
-namespace Stats.Helpers
+namespace IW4MAdmin.Plugins.Stats.Helpers
 {
     public static class WeaponNameExtensions
     {

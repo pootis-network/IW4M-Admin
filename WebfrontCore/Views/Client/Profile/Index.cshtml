@@ -1,8 +1,9 @@
 ﻿@using SharedLibraryCore.Interfaces
 @using Data.Models
 @using Data.Models.Client
-@using WebfrontCore.Permissions
-@using WebfrontCore.ViewModels
+@using IW4MAdmin.WebfrontCore.Permissions
+@using IW4MAdmin.WebfrontCore.ViewModels
+@using SharedLibraryCore
 @model SharedLibraryCore.Dtos.PlayerInfo
 @{
     var match = System.Text.RegularExpressions.Regex.Match(Model.Name.ToUpper(), "[A-Z]").Value;

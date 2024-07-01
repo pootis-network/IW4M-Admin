@@ -1,21 +1,21 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using IW4MAdmin.WebfrontCore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
 using SharedLibraryCore.Configuration.Attributes;
 using SharedLibraryCore.Configuration.Validation;
 using SharedLibraryCore.Interfaces;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using WebfrontCore.ViewModels;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers
 {
     [Authorize]
     public class ConfigurationController : BaseController

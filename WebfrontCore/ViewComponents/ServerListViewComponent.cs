@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using SharedLibraryCore;
-using SharedLibraryCore.Dtos;
 using System.Linq;
 using Data.Models;
 using Data.Models.Client.Stats;
 using IW4MAdmin.Plugins.Stats.Helpers;
+using Microsoft.AspNetCore.Mvc;
+using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
+using SharedLibraryCore.Dtos;
 
-namespace WebfrontCore.ViewComponents
+namespace IW4MAdmin.WebfrontCore.ViewComponents
 {
     public class ServerListViewComponent : ViewComponent
     {

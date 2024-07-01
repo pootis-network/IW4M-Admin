@@ -2,7 +2,7 @@
 using IW4MAdmin.Plugins.Stats.Client.Game;
 using SharedLibraryCore.Interfaces;
 
-namespace Stats.Client.Abstractions
+namespace IW4MAdmin.Plugins.Stats.Client.Abstractions
 {
     public interface IHitInfoBuilder
     {

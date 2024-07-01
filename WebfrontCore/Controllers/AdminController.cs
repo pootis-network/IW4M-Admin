@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using IW4MAdmin.WebfrontCore.QueryHelpers.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Interfaces;
-using System.Threading.Tasks;
-using WebfrontCore.QueryHelpers.Models;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers
 {
     public class AdminController : BaseController
     {

@@ -1,6 +1,6 @@
-﻿using SharedLibraryCore;
-using System;
+﻿using System;
 using Data.Models;
+using SharedLibraryCore;
 
 namespace IW4MAdmin.Plugins.Stats.Cheat
 {

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Data.Models;
 using Data.Models.Client;
+using IW4MAdmin.WebfrontCore.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,9 +18,8 @@ using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Dtos.Meta.Responses;
 using SharedLibraryCore.Helpers;
 using SharedLibraryCore.Interfaces;
-using WebfrontCore.ViewModels;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers
 {
     public class ActionController : BaseController
     {

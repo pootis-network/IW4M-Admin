@@ -1,23 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Data.Models;
+using IW4MAdmin.Plugins.Stats.Config;
+using IW4MAdmin.WebfrontCore.Permissions;
+using IW4MAdmin.WebfrontCore.QueryHelpers.Models;
+using IW4MAdmin.WebfrontCore.ViewComponents;
+using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Database.Models;
 using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Dtos.Meta.Responses;
 using SharedLibraryCore.Interfaces;
 using SharedLibraryCore.QueryHelper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Data.Models;
 using SharedLibraryCore.Services;
-using Stats.Config;
-using WebfrontCore.Permissions;
-using WebfrontCore.QueryHelpers.Models;
-using WebfrontCore.ViewComponents;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers.Client
 {
     public class ClientController : BaseController
     {

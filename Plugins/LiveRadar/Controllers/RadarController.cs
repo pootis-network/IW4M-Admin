@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+using IW4MAdmin.Plugins.LiveRadar.Configuration;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Interfaces;
-using System.Linq;
-using IW4MAdmin.Plugins.LiveRadar.Configuration;
-using Microsoft.AspNetCore.Http;
 
-namespace IW4MAdmin.Plugins.LiveRadar.Web.Controllers
+namespace IW4MAdmin.Plugins.LiveRadar.Controllers
 {
     public class RadarController : BaseController
     {

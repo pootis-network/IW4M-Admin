@@ -1,23 +1,23 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SharedLibraryCore.Dtos;
-using SharedLibraryCore.Interfaces;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IW4MAdmin.WebfrontCore.Controllers.API.Dtos;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SharedLibraryCore;
+using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Events.Management;
 using SharedLibraryCore.Helpers;
+using SharedLibraryCore.Interfaces;
 using SharedLibraryCore.Services;
-using WebfrontCore.Controllers.API.Dtos;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace WebfrontCore.Controllers.API
+namespace IW4MAdmin.WebfrontCore.Controllers.API
 {
     /// <summary>
     /// api controller for client operations

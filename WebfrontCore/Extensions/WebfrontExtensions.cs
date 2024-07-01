@@ -1,6 +1,6 @@
 ﻿using SharedLibraryCore.Configuration;
 
-namespace WebfrontCore.Extensions
+namespace IW4MAdmin.WebfrontCore.Extensions
 {
     public static class WebfrontExtensions
     {

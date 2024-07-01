@@ -1,19 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SharedLibraryCore.Database.Models;
-using SharedLibraryCore.Dtos.Meta.Responses;
-using SharedLibraryCore.Interfaces;
-using SharedLibraryCore.QueryHelper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using IW4MAdmin.WebfrontCore.Permissions;
+using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
-using WebfrontCore.Permissions;
+using SharedLibraryCore.Database.Models;
+using SharedLibraryCore.Dtos.Meta.Responses;
+using SharedLibraryCore.Interfaces;
+using SharedLibraryCore.QueryHelper;
 
-namespace WebfrontCore.ViewComponents
+namespace IW4MAdmin.WebfrontCore.ViewComponents
 {
     public class ProfileMetaListViewComponent : ViewComponent
     {

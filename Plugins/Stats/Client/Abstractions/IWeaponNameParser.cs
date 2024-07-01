@@ -1,7 +1,7 @@
 ﻿using Data.Models;
-using Stats.Client.Game;
+using IW4MAdmin.Plugins.Stats.Client.Game;
 
-namespace Stats.Client.Abstractions;
+namespace IW4MAdmin.Plugins.Stats.Client.Abstractions;
 
 public interface IWeaponNameParser
 {

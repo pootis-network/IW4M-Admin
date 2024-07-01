@@ -4,7 +4,7 @@ using System.Linq;
 using static IW4MAdmin.Plugins.Stats.Cheat.Detection;
 using static SharedLibraryCore.Server;
 
-namespace Stats.Config
+namespace IW4MAdmin.Plugins.Stats.Config
 {
     public class AnticheatConfiguration
     {

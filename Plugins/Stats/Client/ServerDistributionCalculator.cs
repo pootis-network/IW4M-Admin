@@ -6,16 +6,14 @@ using System.Threading.Tasks;
 using Data.Abstractions;
 using Data.Models.Client;
 using Data.Models.Client.Stats;
-using IW4MAdmin.Plugins.Stats;
+using IW4MAdmin.Plugins.Stats.Client.Abstractions;
 using IW4MAdmin.Plugins.Stats.Config;
+using IW4MAdmin.Plugins.Stats.Helpers;
 using Microsoft.EntityFrameworkCore;
 using SharedLibraryCore;
 using SharedLibraryCore.Interfaces;
-using Stats.Client.Abstractions;
-using Stats.Config;
-using Stats.Helpers;
 
-namespace Stats.Client
+namespace IW4MAdmin.Plugins.Stats.Client
 {
     public class ServerDistributionCalculator : IServerDistributionCalculator
     {

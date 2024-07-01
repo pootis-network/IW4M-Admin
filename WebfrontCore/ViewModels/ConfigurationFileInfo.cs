@@ -1,4 +1,4 @@
-﻿namespace WebfrontCore.ViewModels
+﻿namespace IW4MAdmin.WebfrontCore.ViewModels
 {
     public class ConfigurationFileInfo
     { 

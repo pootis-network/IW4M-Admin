@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Data.Models;
 
-namespace WebfrontCore.QueryHelpers.Models;
+namespace IW4MAdmin.WebfrontCore.QueryHelpers.Models;
 
 public class BanInfo
 {

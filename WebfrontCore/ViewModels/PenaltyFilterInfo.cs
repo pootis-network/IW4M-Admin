@@ -1,6 +1,6 @@
 ﻿using Data.Models;
 
-namespace WebfrontCore.ViewModels
+namespace IW4MAdmin.WebfrontCore.ViewModels
 {
     /// <summary>
     /// helper class to determine the filters to apply to penalties

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using ILogger = SharedLibraryCore.Interfaces.ILogger;
 
-namespace IW4MAdmin.Application
+namespace IW4MAdmin.Application.Misc
 {
     [Obsolete]
     public class Logger : ILogger

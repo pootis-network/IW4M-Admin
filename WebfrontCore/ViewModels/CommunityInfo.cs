@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SharedLibraryCore.Configuration;
 
-namespace WebfrontCore.ViewModels
+namespace IW4MAdmin.WebfrontCore.ViewModels
 {
     public class CommunityInfo
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Html;
 
-namespace WebfrontCore.ViewModels;
+namespace IW4MAdmin.WebfrontCore.ViewModels;
 
 public class TableInfo
 {

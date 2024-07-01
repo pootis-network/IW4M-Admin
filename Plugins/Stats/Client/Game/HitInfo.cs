@@ -1,5 +1,4 @@
 ﻿using Data.Models;
-using Stats.Client.Game;
 
 namespace IW4MAdmin.Plugins.Stats.Client.Game
 {

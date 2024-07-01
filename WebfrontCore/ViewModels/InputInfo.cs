@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WebfrontCore.ViewModels
+namespace IW4MAdmin.WebfrontCore.ViewModels
 {
     public class InputInfo
     {

@@ -1,4 +1,4 @@
-﻿namespace WebfrontCore.ViewModels
+﻿namespace IW4MAdmin.WebfrontCore.ViewModels
 {
     /// <summary>
     /// Helper class that hold information to assist with binding lists of items

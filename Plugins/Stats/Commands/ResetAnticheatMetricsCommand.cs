@@ -5,6 +5,7 @@ using Data.Abstractions;
 using Data.Models.Client;
 using Data.Models.Client.Stats;
 using IW4MAdmin.Plugins.Stats.Cheat;
+using IW4MAdmin.Plugins.Stats.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SharedLibraryCore;
@@ -12,7 +13,7 @@ using SharedLibraryCore.Configuration;
 using SharedLibraryCore.Interfaces;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Stats.Commands
+namespace IW4MAdmin.Plugins.Stats.Commands
 {
     public class ResetAnticheatMetricsCommand : Command
     {
@@ -38,11 +39,10 @@ namespace Stats.Commands
             try
             {
                 var clientDetection =
-                    gameEvent.Target.GetAdditionalProperty<Detection>(IW4MAdmin.Plugins.Stats.Helpers.StatManager
+                    gameEvent.Target.GetAdditionalProperty<Detection>(StatManager
                         .CLIENT_DETECTIONS_KEY);
                 var clientStats =
-                    gameEvent.Target.GetAdditionalProperty<EFClientStatistics>(IW4MAdmin.Plugins.Stats.Helpers
-                        .StatManager.CLIENT_STATS_KEY);
+                    gameEvent.Target.GetAdditionalProperty<EFClientStatistics>(StatManager.CLIENT_STATS_KEY);
 
                 if (clientStats != null)
                 {

@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SharedLibraryCore;
-using System.Collections.Generic;
 using Data.Abstractions;
 using Data.Models.Client.Stats;
-using SharedLibraryCore.Database.Models;
+using IW4MAdmin.Plugins.Stats.Config;
+using Microsoft.EntityFrameworkCore;
+using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
+using SharedLibraryCore.Database.Models;
 using SharedLibraryCore.Interfaces;
-using Stats.Config;
 
 namespace IW4MAdmin.Plugins.Stats.Commands;
 

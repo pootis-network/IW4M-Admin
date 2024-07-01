@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Data.Models;
+using Microsoft.AspNetCore.Mvc;
 
-namespace WebfrontCore.ViewComponents
+namespace IW4MAdmin.WebfrontCore.ViewComponents
 {
     public class PenaltyListViewComponent : ViewComponent
     {

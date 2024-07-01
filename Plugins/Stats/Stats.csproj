@@ -14,6 +14,7 @@
     <Configurations>Debug;Release;Prerelease</Configurations>
     <LangVersion>Latest</LangVersion>
     <IsPackable>false</IsPackable>
+    <RootNamespace>IW4MAdmin.Plugins.Stats</RootNamespace>
   </PropertyGroup>
   
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Stats.Dtos
+namespace IW4MAdmin.Plugins.Stats.Dtos
 {
     public class StatsInfoResult
     {

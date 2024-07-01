@@ -1,9 +1,7 @@
-﻿using SharedLibraryCore.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using SharedLibraryCore.Interfaces;
 
-namespace IW4MAdmin.Application
+namespace IW4MAdmin.Application.Misc
 {
     /// <summary>
     /// implementatin of IPageList that supports basic

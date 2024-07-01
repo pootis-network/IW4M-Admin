@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using SharedLibraryCore;
-using SharedLibraryCore.Dtos;
-using SharedLibraryCore.Interfaces;
 using System.Linq;
 using Data.Models;
 using Data.Models.Client.Stats;
 using IW4MAdmin.Plugins.Stats.Helpers;
-using WebfrontCore.ViewModels;
+using IW4MAdmin.WebfrontCore.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using SharedLibraryCore;
+using SharedLibraryCore.Dtos;
+using SharedLibraryCore.Interfaces;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers
 {
     public class ServerController : BaseController
     {

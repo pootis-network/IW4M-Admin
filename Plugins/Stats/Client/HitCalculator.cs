@@ -18,8 +18,6 @@ using SharedLibraryCore.Database.Models;
 using SharedLibraryCore.Events;
 using SharedLibraryCore.Events.Game;
 using SharedLibraryCore.Events.Management;
-using Stats.Client.Abstractions;
-using Stats.Client.Game;
 
 namespace IW4MAdmin.Plugins.Stats.Client;
 

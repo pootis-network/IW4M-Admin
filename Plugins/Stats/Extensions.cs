@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Data.Models.Client.Stats;
-using Microsoft.EntityFrameworkCore.Internal;
-using SharedLibraryCore.Dtos;
-using Stats.Dtos;
 
 namespace IW4MAdmin.Plugins.Stats
 {

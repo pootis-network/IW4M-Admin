@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using Data.Models;
+using IW4MAdmin.Plugins.Stats.Client.Abstractions;
 using IW4MAdmin.Plugins.Stats.Client.Game;
 using Microsoft.Extensions.Logging;
 using SharedLibraryCore.Interfaces;
-using Stats.Client.Abstractions;
-using Stats.Client.Game;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Stats.Client;
+namespace IW4MAdmin.Plugins.Stats.Client;
 
 public class HitInfoBuilder : IHitInfoBuilder
 {

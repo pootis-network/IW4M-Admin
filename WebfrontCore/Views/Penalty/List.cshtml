@@ -1,5 +1,7 @@
-﻿@using Humanizer
-@using Data.Models
+﻿@using Data.Models
+@using Humanizer
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using SharedLibraryCore
 @model Data.Models.EFPenalty.PenaltyType
 @{
     var loc = Utilities.CurrentLocalization.LocalizationIndex;
@@ -68,7 +70,7 @@
         </tr>
         </thead>
         <tbody id="penalty_table">
-        @await Component.InvokeAsync("PenaltyList", new WebfrontCore.ViewModels.PenaltyFilterInfo
+        @await Component.InvokeAsync("PenaltyList", new IW4MAdmin.WebfrontCore.ViewModels.PenaltyFilterInfo
         {
             Offset = 0,
             Count = 30,

@@ -1,13 +1,4 @@
-﻿using IW4MAdmin.Application.IO;
-using IW4MAdmin.Application.Misc;
-using SharedLibraryCore;
-using SharedLibraryCore.Configuration;
-using SharedLibraryCore.Database.Models;
-using SharedLibraryCore.Dtos;
-using SharedLibraryCore.Exceptions;
-using SharedLibraryCore.Helpers;
-using SharedLibraryCore.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -19,25 +10,34 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Data.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog.Context;
-using static SharedLibraryCore.Database.Models.EFClient;
 using Data.Models;
 using Data.Models.Server;
 using Humanizer;
 using IW4MAdmin.Application.Alerts;
 using IW4MAdmin.Application.Commands;
+using IW4MAdmin.Application.IO;
+using IW4MAdmin.Application.Misc;
 using IW4MAdmin.Application.Plugin.Script;
 using IW4MAdmin.Plugins.Stats.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog.Context;
+using SharedLibraryCore;
 using SharedLibraryCore.Alerts;
+using SharedLibraryCore.Configuration;
+using SharedLibraryCore.Database.Models;
+using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Events.Management;
 using SharedLibraryCore.Events.Server;
+using SharedLibraryCore.Exceptions;
+using SharedLibraryCore.Helpers;
+using SharedLibraryCore.Interfaces;
 using SharedLibraryCore.Interfaces.Events;
+using static SharedLibraryCore.Database.Models.EFClient;
 using static Data.Models.Client.EFClient;
 
-namespace IW4MAdmin
+namespace IW4MAdmin.Application
 {
     public class IW4MServer : Server
     {

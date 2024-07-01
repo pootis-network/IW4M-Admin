@@ -2,7 +2,7 @@
 using FluentValidation;
 using SharedLibraryCore.Dtos;
 
-namespace WebfrontCore.Controllers.API.Validation
+namespace IW4MAdmin.WebfrontCore.Controllers.API.Validation
 {
     /// <summary>
     /// validator for FindClientRequest

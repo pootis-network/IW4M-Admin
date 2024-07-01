@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Stats.Config;
+using IW4MAdmin.Plugins.Stats.Config;
 
 namespace IW4MAdmin.Plugins.Stats.Helpers;
 

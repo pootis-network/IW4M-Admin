@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Data.Abstractions;
 using Data.Models.Client;
 using Data.Models.Server;
+using IW4MAdmin.Plugins.Stats.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SharedLibraryCore;
@@ -12,10 +13,9 @@ using SharedLibraryCore.Configuration;
 using SharedLibraryCore.Dtos.Meta.Responses;
 using SharedLibraryCore.Helpers;
 using SharedLibraryCore.Interfaces;
-using Stats.Dtos;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Stats.Helpers
+namespace IW4MAdmin.Plugins.Stats.Helpers
 {
     /// <summary>
     /// implementation of IResourceQueryHelper

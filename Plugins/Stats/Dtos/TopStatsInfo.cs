@@ -1,9 +1,8 @@
-﻿using SharedLibraryCore.Dtos;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using SharedLibraryCore.Dtos;
 
-namespace IW4MAdmin.Plugins.Stats.Web.Dtos
+namespace IW4MAdmin.Plugins.Stats.Dtos
 {
     public class TopStatsInfo : SharedInfo
     {

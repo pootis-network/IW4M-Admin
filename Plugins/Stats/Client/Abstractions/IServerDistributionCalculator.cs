@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Stats.Client.Abstractions
+namespace IW4MAdmin.Plugins.Stats.Client.Abstractions
 {
     public interface IServerDistributionCalculator
     {

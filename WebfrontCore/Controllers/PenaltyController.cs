@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SharedLibraryCore;
-using SharedLibraryCore.Dtos;
-using SharedLibraryCore.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Data.Abstractions;
 using Data.Models;
+using Microsoft.AspNetCore.Mvc;
+using SharedLibraryCore;
+using SharedLibraryCore.Interfaces;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers
 {
     public class PenaltyController : BaseController
     {

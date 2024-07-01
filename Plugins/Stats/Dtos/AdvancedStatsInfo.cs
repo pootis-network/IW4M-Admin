@@ -3,7 +3,7 @@ using Data.Models.Client;
 using Data.Models.Client.Stats;
 using SharedLibraryCore.Dtos;
 
-namespace Stats.Dtos
+namespace IW4MAdmin.Plugins.Stats.Dtos
 {
     public class AdvancedStatsInfo
     {

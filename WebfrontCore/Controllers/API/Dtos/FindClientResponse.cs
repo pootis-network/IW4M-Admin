@@ -1,7 +1,7 @@
-﻿using SharedLibraryCore.Dtos;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SharedLibraryCore.Dtos;
 
-namespace WebfrontCore.Controllers.API.Dtos
+namespace IW4MAdmin.WebfrontCore.Controllers.API.Dtos
 {
     public class FindClientResponse
     {

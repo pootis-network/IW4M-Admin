@@ -1,20 +1,4 @@
 ﻿using System;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using SharedLibraryCore;
-using SharedLibraryCore.Configuration;
-using SharedLibraryCore.Dtos;
-using SharedLibraryCore.Dtos.Meta.Responses;
-using SharedLibraryCore.Interfaces;
-using SharedLibraryCore.Services;
-using Stats.Dtos;
-using Stats.Helpers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,13 +8,29 @@ using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using Data.Abstractions;
 using Data.Helpers;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using IW4MAdmin.Plugins.Stats.Dtos;
+using IW4MAdmin.Plugins.Stats.Helpers;
+using IW4MAdmin.WebfrontCore.Controllers.API.Validation;
+using IW4MAdmin.WebfrontCore.Middleware;
+using IW4MAdmin.WebfrontCore.QueryHelpers;
+using IW4MAdmin.WebfrontCore.QueryHelpers.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.RateLimiting;
-using WebfrontCore.Controllers.API.Validation;
-using WebfrontCore.Middleware;
-using WebfrontCore.QueryHelpers;
-using WebfrontCore.QueryHelpers.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using SharedLibraryCore;
+using SharedLibraryCore.Configuration;
+using SharedLibraryCore.Dtos;
+using SharedLibraryCore.Dtos.Meta.Responses;
+using SharedLibraryCore.Interfaces;
+using SharedLibraryCore.Services;
 
-namespace WebfrontCore
+namespace IW4MAdmin.WebfrontCore
 {
     public class Startup
     {
@@ -51,8 +51,7 @@ namespace WebfrontCore
 
             services.AddStackPolicy(options =>
             {
-                options.MaxConcurrentRequests =
-                    int.Parse(Environment.GetEnvironmentVariable("MaxConcurrentRequests") ?? "1");
+                options.MaxConcurrentRequests = int.Parse(Environment.GetEnvironmentVariable("MaxConcurrentRequests") ?? "1");
                 options.RequestQueueLimit = int.Parse(Environment.GetEnvironmentVariable("RequestQueueLimit") ?? "1");
             });
 
@@ -149,6 +148,14 @@ namespace WebfrontCore
                 app.UseMiddleware<IPWhitelist>(serviceProvider.GetService<ILogger<IPWhitelist>>(),
                     serviceProvider.GetRequiredService<ApplicationConfiguration>().WebfrontConnectionWhitelist);
             }
+
+            app.UseRateLimiter(new RateLimiterOptions()
+                .AddConcurrencyLimiter("concurrencyPolicy", (options) =>
+                {
+                    options.PermitLimit = 2;
+                    options.QueueLimit = 25;
+                    options.QueueProcessingOrder = QueueProcessingOrder.NewestFirst;
+                }));
 
             app.UseStaticFiles();
             app.UseAuthentication();

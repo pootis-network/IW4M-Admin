@@ -1,4 +1,4 @@
-﻿namespace Stats.Dtos
+﻿namespace IW4MAdmin.Plugins.Stats.Dtos
 {
     public class StatsInfoRequest
     {

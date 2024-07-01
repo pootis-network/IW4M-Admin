@@ -6,6 +6,7 @@
     <LangVersion>Latest</LangVersion>
     <Configurations>Debug;Release;Prerelease</Configurations>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <RootNamespace>IW4MAdmin.Plugins.AutoMessageFeed</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

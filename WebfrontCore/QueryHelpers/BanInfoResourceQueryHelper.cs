@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using Data.Abstractions;
 using Data.Models;
 using Data.Models.Client;
+using IW4MAdmin.WebfrontCore.QueryHelpers.Models;
 using Microsoft.EntityFrameworkCore;
 using SharedLibraryCore;
 using SharedLibraryCore.Helpers;
 using SharedLibraryCore.Interfaces;
-using WebfrontCore.QueryHelpers.Models;
 
-namespace WebfrontCore.QueryHelpers;
+namespace IW4MAdmin.WebfrontCore.QueryHelpers;
 
 public class BanInfoResourceQueryHelper : IResourceQueryHelper<BanInfoRequest, BanInfo>
 {

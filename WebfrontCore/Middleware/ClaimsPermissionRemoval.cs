@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using SharedLibraryCore;
-using SharedLibraryCore.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Data.Models.Client;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using SharedLibraryCore;
 using SharedLibraryCore.Commands;
+using SharedLibraryCore.Interfaces;
 using static SharedLibraryCore.GameEvent;
 
-namespace WebfrontCore.Middleware
+namespace IW4MAdmin.WebfrontCore.Middleware
 {
     /// <summary>
     /// Facilitates the removal of identity claims when client is demoted

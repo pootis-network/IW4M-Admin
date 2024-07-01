@@ -6,16 +6,15 @@ using Data.Abstractions;
 using Data.Models;
 using Data.Models.Client;
 using Data.Models.Client.Stats;
-using IW4MAdmin.Plugins.Stats;
+using IW4MAdmin.Plugins.Stats.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SharedLibraryCore.Dtos;
 using SharedLibraryCore.Helpers;
 using SharedLibraryCore.Interfaces;
-using Stats.Dtos;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Stats.Helpers
+namespace IW4MAdmin.Plugins.Stats.Helpers
 {
     public class AdvancedClientStatsResourceQueryHelper : IResourceQueryHelper<StatsInfoRequest, AdvancedStatsInfo>
     {

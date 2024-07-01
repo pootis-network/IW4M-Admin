@@ -1,4 +1,4 @@
-﻿namespace WebfrontCore.Permissions;
+﻿namespace IW4MAdmin.WebfrontCore.Permissions;
 
 public enum WebfrontEntity
 {

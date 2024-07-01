@@ -3,12 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Data.Models;
+using IW4MAdmin.WebfrontCore.Controllers.API.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Interfaces;
-using WebfrontCore.Controllers.API.Dtos;
 
-namespace WebfrontCore.Controllers.API;
+namespace IW4MAdmin.WebfrontCore.Controllers.API;
 
 [ApiController]
 [Route("api/[controller]")]

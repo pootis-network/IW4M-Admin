@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Stats.Client.Game
+namespace IW4MAdmin.Plugins.Stats.Client.Game
 {
     public class WeaponInfo
     {

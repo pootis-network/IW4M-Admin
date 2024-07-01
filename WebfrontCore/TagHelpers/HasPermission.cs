@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Security.Claims;
 using Data.Models.Client;
+using IW4MAdmin.WebfrontCore.Permissions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
-using WebfrontCore.Permissions;
 
-namespace WebfrontCore.TagHelpers;
+namespace IW4MAdmin.WebfrontCore.TagHelpers;
 
 [HtmlTargetElement("has-permission")]
 public class HasPermission : TagHelper

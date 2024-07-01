@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Stats.Client.Game
+﻿namespace IW4MAdmin.Plugins.Stats.Client.Game
 {
     public class AttachmentInfo
     {

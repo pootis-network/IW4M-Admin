@@ -1,14 +1,14 @@
-﻿using SharedLibraryCore;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Data.Abstractions;
 using Data.Models.Client.Stats;
-using Microsoft.EntityFrameworkCore;
 using IW4MAdmin.Plugins.Stats.Helpers;
-using SharedLibraryCore.Database.Models;
-using SharedLibraryCore.Configuration;
-using SharedLibraryCore.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using SharedLibraryCore;
 using SharedLibraryCore.Commands;
+using SharedLibraryCore.Configuration;
+using SharedLibraryCore.Database.Models;
+using SharedLibraryCore.Interfaces;
 
 namespace IW4MAdmin.Plugins.Stats.Commands
 {

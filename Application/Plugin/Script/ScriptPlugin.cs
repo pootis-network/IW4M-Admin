@@ -129,7 +129,7 @@ namespace IW4MAdmin.Application.Plugin.Script
                             typeof(Encoding).Assembly,
                             typeof(CancellationTokenSource).Assembly,
                             typeof(Data.Models.Client.EFClient).Assembly,
-                            typeof(IW4MAdmin.Plugins.Stats.Plugin).Assembly
+                            typeof(Plugins.Stats.Plugin).Assembly
                         })
                         .CatchClrExceptions()
                         .AddObjectConverter(new PermissionLevelToStringConverter()));

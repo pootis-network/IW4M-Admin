@@ -1,4 +1,5 @@
-﻿@model IEnumerable<WebfrontCore.ViewModels.ConfigurationFileInfo>
+﻿@using SharedLibraryCore
+@model IEnumerable<IW4MAdmin.WebfrontCore.ViewModels.ConfigurationFileInfo>
 @{
     ViewData["Title"] = Utilities.CurrentLocalization.LocalizationIndex["WEBFRONT_CONFIGURATION_TITLE"];
     var noticeText = Utilities.CurrentLocalization.LocalizationIndex["WEBFRONT_CONFIGURATION_SAVING_CHANGES"];

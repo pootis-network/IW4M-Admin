@@ -15,7 +15,6 @@ using SharedLibraryCore.Interfaces;
 using SharedLibraryCore.QueryHelper;
 using SharedLibraryCore.Repositories;
 using SharedLibraryCore.Services;
-using Stats.Dtos;
 using System;
 using System.IO;
 using System.Linq;
@@ -33,18 +32,17 @@ using IW4MAdmin.Application.Localization;
 using IW4MAdmin.Application.Plugin;
 using IW4MAdmin.Application.Plugin.Script;
 using IW4MAdmin.Application.QueryHelpers;
+using IW4MAdmin.Plugins.Stats.Client;
+using IW4MAdmin.Plugins.Stats.Client.Abstractions;
+using IW4MAdmin.Plugins.Stats.Config;
+using IW4MAdmin.Plugins.Stats.Dtos;
+using IW4MAdmin.Plugins.Stats.Helpers;
+using IW4MAdmin.WebfrontCore.QueryHelpers.Models;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using IW4MAdmin.Plugins.Stats.Client.Abstractions;
-using IW4MAdmin.Plugins.Stats.Client;
 using Microsoft.Extensions.Hosting;
 using Refit;
 using SharedLibraryCore.Interfaces.Events;
-using Stats.Client.Abstractions;
-using Stats.Client;
-using Stats.Config;
-using Stats.Helpers;
-using WebfrontCore.QueryHelpers.Models;
 
 namespace IW4MAdmin.Application
 {

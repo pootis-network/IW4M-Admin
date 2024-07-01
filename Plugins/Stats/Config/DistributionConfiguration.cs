@@ -1,4 +1,4 @@
-﻿namespace Stats.Config
+﻿namespace IW4MAdmin.Plugins.Stats.Config
 {
     public class DistributionConfiguration
     {

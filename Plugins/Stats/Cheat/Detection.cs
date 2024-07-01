@@ -1,15 +1,14 @@
-﻿using SharedLibraryCore.Database.Models;
-using SharedLibraryCore.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Models;
 using Data.Models.Client;
 using Data.Models.Client.Stats;
+using IW4MAdmin.Plugins.Stats.Config;
 using Microsoft.Extensions.Logging;
 using SharedLibraryCore;
-using Stats.Config;
+using SharedLibraryCore.Helpers;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace IW4MAdmin.Plugins.Stats.Cheat

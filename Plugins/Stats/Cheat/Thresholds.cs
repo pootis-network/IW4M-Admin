@@ -1,6 +1,6 @@
-﻿using Stats.Config;
-using System;
+﻿using System;
 using Data.Models;
+using IW4MAdmin.Plugins.Stats.Config;
 
 namespace IW4MAdmin.Plugins.Stats.Cheat
 {

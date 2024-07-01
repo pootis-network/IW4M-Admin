@@ -1,6 +1,6 @@
 ﻿using Data.Models;
-using SharedLibraryCore;
 using IW4MAdmin.Plugins.LiveRadar.Events;
+using SharedLibraryCore;
 
 // ReSharper disable CompareOfFloatsByEqualityOperator
 #pragma warning disable CS0659

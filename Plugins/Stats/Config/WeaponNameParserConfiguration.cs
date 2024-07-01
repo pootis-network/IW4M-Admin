@@ -1,6 +1,6 @@
 ﻿using Data.Models;
 
-namespace Stats.Config
+namespace IW4MAdmin.Plugins.Stats.Config
 {
     public class WeaponNameParserConfiguration
     {

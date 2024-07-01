@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
-using SharedLibraryCore;
-using SharedLibraryCore.Interfaces;
-using System;
+﻿using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using SharedLibraryCore;
 using SharedLibraryCore.Events.Management;
 using SharedLibraryCore.Helpers;
+using SharedLibraryCore.Interfaces;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers
 {
     public class AccountController : BaseController
     {

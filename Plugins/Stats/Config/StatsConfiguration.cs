@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Models;
-using IW4MAdmin.Plugins.Stats.Config;
 using SharedLibraryCore;
 using SharedLibraryCore.Interfaces;
 using static IW4MAdmin.Plugins.Stats.Cheat.Detection;
 
-namespace Stats.Config
+namespace IW4MAdmin.Plugins.Stats.Config
 {
     public class StatsConfiguration : IBaseConfiguration
     {

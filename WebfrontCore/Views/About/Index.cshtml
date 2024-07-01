@@ -1,6 +1,7 @@
 ﻿@using SharedLibraryCore.Configuration
 @using System.Text.RegularExpressions
-@model WebfrontCore.ViewModels.CommunityInfo
+@using SharedLibraryCore
+@model IW4MAdmin.WebfrontCore.ViewModels.CommunityInfo
 @{
     IEnumerable<KeyValuePair<(string, long), string[]>> allRules = new[] { new KeyValuePair<(string, long), string[]>((ViewBag.Localization["WEBFRONT_ABOUT_GLOBAL_RULES"], 0), Model.GlobalRules) };
     var serverRules = Model.ServerRules?.Where(server => server.Value != null && server.Value.Any()).ToList();

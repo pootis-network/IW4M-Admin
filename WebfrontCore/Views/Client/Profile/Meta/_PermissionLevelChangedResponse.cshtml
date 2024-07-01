@@ -1,4 +1,5 @@
-﻿@model SharedLibraryCore.Dtos.Meta.Responses.PermissionLevelChangedResponse
+﻿@using SharedLibraryCore
+@model SharedLibraryCore.Dtos.Meta.Responses.PermissionLevelChangedResponse
 
 <has-permission entity="ClientLevel" required-permission="Read">
     @if (TempData["ShowMetaHeader"] as bool? ?? false)

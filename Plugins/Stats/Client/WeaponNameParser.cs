@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using Stats.Client.Abstractions;
-using Stats.Client.Game;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Data.Models;
-using Stats.Config;
+using IW4MAdmin.Plugins.Stats.Client.Abstractions;
+using IW4MAdmin.Plugins.Stats.Client.Game;
+using IW4MAdmin.Plugins.Stats.Config;
+using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Stats.Client
+namespace IW4MAdmin.Plugins.Stats.Client
 {
     public class WeaponNameParser : IWeaponNameParser
     {

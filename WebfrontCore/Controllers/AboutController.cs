@@ -1,12 +1,12 @@
 ﻿using System.Linq;
+using IW4MAdmin.WebfrontCore.Extensions;
+using IW4MAdmin.WebfrontCore.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Configuration;
 using SharedLibraryCore.Interfaces;
-using WebfrontCore.Extensions;
-using WebfrontCore.ViewModels;
 
-namespace WebfrontCore.Controllers
+namespace IW4MAdmin.WebfrontCore.Controllers
 {
     public class AboutController : BaseController
     {

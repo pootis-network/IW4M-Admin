@@ -1,8 +1,8 @@
-﻿using SharedLibraryCore;
+﻿using System.Collections.Generic;
+using SharedLibraryCore;
 using SharedLibraryCore.Database.Models;
-using SharedLibraryCore.Interfaces;
-using System.Collections.Generic;
 using SharedLibraryCore.Events.Game;
+using SharedLibraryCore.Interfaces;
 using EventGeneratorCallback = System.ValueTuple<string, string,
     System.Func<string, SharedLibraryCore.Interfaces.IEventParserConfiguration,
         SharedLibraryCore.GameEvent,

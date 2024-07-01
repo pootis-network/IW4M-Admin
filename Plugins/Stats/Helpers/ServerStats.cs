@@ -1,11 +1,11 @@
-﻿using SharedLibraryCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Data.Models.Client;
 using Data.Models.Client.Stats;
 using Data.Models.Server;
+using SharedLibraryCore;
 
 namespace IW4MAdmin.Plugins.Stats.Helpers
 {

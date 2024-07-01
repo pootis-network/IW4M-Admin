@@ -1,5 +1,6 @@
-﻿@using WebfrontCore.ViewModels
-@model IEnumerable<WebfrontCore.ViewModels.ScoreboardInfo>
+﻿@using IW4MAdmin.WebfrontCore.ViewModels
+@using SharedLibraryCore
+@model IEnumerable<IW4MAdmin.WebfrontCore.ViewModels.ScoreboardInfo>
 @{
     var selectedServer = Model?.FirstOrDefault(server => server.ServerId == ViewBag.SelectedServerId) ?? Model?.First();
 }

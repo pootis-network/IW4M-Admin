@@ -1,7 +1,7 @@
-﻿using SharedLibraryCore.QueryHelper;
-using System;
+﻿using System;
+using SharedLibraryCore.QueryHelper;
 
-namespace Stats.Dtos
+namespace IW4MAdmin.Plugins.Stats.Dtos
 {
     public class ChatSearchQuery : ClientPaginationRequest
     {

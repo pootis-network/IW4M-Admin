@@ -1,4 +1,4 @@
-﻿namespace WebfrontCore.Controllers.API.Models
+﻿namespace IW4MAdmin.WebfrontCore.Controllers.API.Models
 {
     public class CommandRequest
     {

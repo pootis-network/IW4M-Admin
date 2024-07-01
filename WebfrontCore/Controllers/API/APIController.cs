@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Interfaces;
-using System.Linq;
 
-namespace WebfrontCore.Controllers.API;
+namespace IW4MAdmin.WebfrontCore.Controllers.API;
 
 public class ApiController : BaseController
 {

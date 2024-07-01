@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
+using IW4MAdmin.WebfrontCore.QueryHelpers.Models;
 using Microsoft.AspNetCore.Mvc;
 using SharedLibraryCore;
 using SharedLibraryCore.Interfaces;
-using WebfrontCore.QueryHelpers.Models;
 
-namespace WebfrontCore.Controllers.API;
+namespace IW4MAdmin.WebfrontCore.Controllers.API;
 
 [Route("api/[controller]")]
 public class PenaltyController : BaseController

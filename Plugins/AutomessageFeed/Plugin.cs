@@ -1,13 +1,13 @@
-﻿using SharedLibraryCore;
-using SharedLibraryCore.Interfaces;
-using System.Threading.Tasks;
-using Microsoft.SyndicationFeed.Rss;
-using System.Xml;
-using Microsoft.SyndicationFeed;
-using System.Collections.Generic;
-using SharedLibraryCore.Helpers;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SyndicationFeed;
+using Microsoft.SyndicationFeed.Rss;
+using SharedLibraryCore;
+using SharedLibraryCore.Helpers;
+using SharedLibraryCore.Interfaces;
 using SharedLibraryCore.Interfaces.Events;
 
 namespace IW4MAdmin.Plugins.AutoMessageFeed;

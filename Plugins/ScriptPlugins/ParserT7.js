@@ -14,10 +14,10 @@ var plugin = {
         rconParser = manager.GenerateDynamicRConParser(this.name);
         eventParser = manager.GenerateDynamicEventParser(this.name);
 
-        rconParser.Configuration.Status.Pattern = '^ *([0-9]+) +-?([0-9]+) +((?:[A-Z]+|[0-9]+)) +((?:[a-z]|[0-9]){8,32}|(?:[a-z]|[0-9]){8,32}|bot[0-9]+|(?:[0-9]+)) *(.{0,32}) +(\\d+\\.\\d+\\.\\d+.\\d+\\:-*\\d{1,5}|0+.0+:-*\\d{1,5}|loopback|unknown)(?:\\([0-9]+\\)) +(-*[0-9]+) *$';
+        rconParser.Configuration.Status.Pattern = '^ *([0-9]+) +-?([0-9]+) +((?:[A-Z]+|[0-9]+)) +((?:[a-z]|[0-9]){8,32}|(?:[a-z]|[0-9]){8,32}|bot[0-9]+|(?:[0-9]+)) *(.{0,32}) +(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}.\\d{1,3}|loopback|unknown|0+.0+)(?:\\:-?\\d{1,5})? +(-*[0-9]+) *$';
         rconParser.Configuration.StatusHeader.Pattern           = 'num +score +ping +xuid +name +address +qport|---------- Live ----------';
-        rconParser.Configuration.CommandPrefixes.Kick           = 'clientkick_for_reason {0} "{1}"';
-        rconParser.Configuration.CommandPrefixes.Ban            = 'clientkick_for_reason {0} "{1}"';
+        rconParser.Configuration.CommandPrefixes.Kick           = 'clientkick {0}'; // clientkick_for_reason fails over rcon
+        rconParser.Configuration.CommandPrefixes.Ban            = 'clientkick {0}';
         rconParser.Configuration.CommandPrefixes.TempBan        = 'tempbanclient {0}';
         rconParser.Configuration.CommandPrefixes.RConCommand    = '\xff\xff\xff\xff\x00{0} {1}';
         rconParser.Configuration.CommandPrefixes.RConGetDvar    = '\xff\xff\xff\xff\x00{0} {1}';

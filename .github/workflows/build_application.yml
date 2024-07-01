@@ -223,10 +223,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: IW4MAdmin-${{ env.buildNumber }}-${{ env.releaseType }}
-          path: ${{ github.workspace }}
+          path: ${{ github.workspace }}/artifact
 
       - name: Zip build
-        run: zip -r IW4MAdmin-${{ env.buildNumber }}.zip ${{ github.workspace }}/*
+        run: |
+          cd ${{ github.workspace }}/artifact
+          zip -r IW4MAdmin-${{ env.buildNumber }}.zip .
 
       - name: Make release
         uses: ncipollo/release-action@v1

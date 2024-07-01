@@ -20,9 +20,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using Data.Abstractions;
 using Data.Helpers;
+using Microsoft.AspNetCore.RateLimiting;
 using WebfrontCore.Controllers.API.Validation;
 using WebfrontCore.Middleware;
 using WebfrontCore.QueryHelpers;
@@ -134,7 +136,14 @@ namespace WebfrontCore
                 app.UseMiddleware<IPWhitelist>(serviceProvider.GetService<ILogger<IPWhitelist>>(), serviceProvider.GetRequiredService<ApplicationConfiguration>().WebfrontConnectionWhitelist);
             }
 
-            app.UseConcurrencyLimiter();
+            app.UseRateLimiter(new RateLimiterOptions()
+                .AddConcurrencyLimiter("concurrencyPolicy", (options) =>
+                {
+                    options.PermitLimit = 2;
+                    options.QueueLimit = 25;
+                    options.QueueProcessingOrder = QueueProcessingOrder.NewestFirst;
+                }));
+
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseCors("AllowAll");
@@ -146,7 +155,8 @@ namespace WebfrontCore
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")
+                    .RequireRateLimiting("concurrencyPolicy");
             });
         }
     }

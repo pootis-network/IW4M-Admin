@@ -50,7 +50,7 @@ namespace IW4MAdmin.Application.IO
             {
                 // parse each line
                 var lines = response.Data
-                     .Split(Environment.NewLine)
+                     .Split('\n')
                      .Where(_line => _line.Length > 0);
 
                 foreach (string eventLine in lines)

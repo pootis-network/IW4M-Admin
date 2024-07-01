@@ -239,7 +239,7 @@ jobs:
           prerelease: true
           body: Automated rolling release - changelog below. [Updating Instructions](https://github.com/RaidMax/IW4M-Admin/wiki/Getting-Started#updating)
           generateReleaseNotes: true
-          artifacts: ${{ github.workspace }}/*.zip
+          artifacts: ${{ github.workspace }}/artifact/*.zip
           artifactErrorsFailBuild: true
 
   update_master_version:

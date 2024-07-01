@@ -44,16 +44,24 @@ namespace WebfrontCore
                     _builder =>
                     {
                         _builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
                     });
             });
-            
+
             services.AddStackPolicy(options =>
             {
-                options.MaxConcurrentRequests = int.Parse(Environment.GetEnvironmentVariable("MaxConcurrentRequests") ?? "1");
+                options.MaxConcurrentRequests =
+                    int.Parse(Environment.GetEnvironmentVariable("MaxConcurrentRequests") ?? "1");
                 options.RequestQueueLimit = int.Parse(Environment.GetEnvironmentVariable("RequestQueueLimit") ?? "1");
             });
+
+            services.AddRateLimiter(options => options.AddConcurrencyLimiter("concurrencyPolicy", opt =>
+            {
+                opt.PermitLimit = 2;
+                opt.QueueLimit = 25;
+                opt.QueueProcessingOrder = QueueProcessingOrder.NewestFirst;
+            }));
 
             IEnumerable<Assembly> pluginAssemblies()
             {
@@ -61,7 +69,9 @@ namespace WebfrontCore
 
                 if (Directory.Exists(pluginDir))
                 {
-                    var dllFileNames = Directory.GetFiles($"{Utilities.OperatingDirectory}Plugins{Path.DirectorySeparatorChar}", "*.dll");
+                    var dllFileNames =
+                        Directory.GetFiles($"{Utilities.OperatingDirectory}Plugins{Path.DirectorySeparatorChar}",
+                            "*.dll");
                     return dllFileNames.Select(_file => Assembly.LoadFrom(_file));
                 }
 
@@ -89,7 +99,7 @@ namespace WebfrontCore
             }
 
             services.AddHttpContextAccessor();
-            
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
@@ -103,7 +113,9 @@ namespace WebfrontCore
             services.AddTransient<IValidator<FindClientRequest>, FindClientRequestValidator>();
             services.AddSingleton<IResourceQueryHelper<FindClientRequest, FindClientResult>, ClientService>();
             services.AddSingleton<IResourceQueryHelper<StatsInfoRequest, StatsInfoResult>, StatsResourceQueryHelper>();
-            services.AddSingleton<IResourceQueryHelper<StatsInfoRequest, AdvancedStatsInfo>, AdvancedClientStatsResourceQueryHelper>();
+            services
+                .AddSingleton<IResourceQueryHelper<StatsInfoRequest, AdvancedStatsInfo>,
+                    AdvancedClientStatsResourceQueryHelper>();
             services.AddSingleton(typeof(IDataValueCache<,>), typeof(DataValueCache<,>));
             services.AddSingleton<IResourceQueryHelper<BanInfoRequest, BanInfo>, BanInfoResourceQueryHelper>();
         }
@@ -115,7 +127,8 @@ namespace WebfrontCore
             {
                 if (_context.HttpContext.Response.StatusCode == (int)HttpStatusCode.NotFound)
                 {
-                    _context.HttpContext.Response.Redirect($"/Home/ResponseStatusCode?statusCode={_context.HttpContext.Response.StatusCode}");
+                    _context.HttpContext.Response.Redirect(
+                        $"/Home/ResponseStatusCode?statusCode={_context.HttpContext.Response.StatusCode}");
                 }
 
                 return Task.CompletedTask;
@@ -133,16 +146,9 @@ namespace WebfrontCore
 
             if (Program.Manager.GetApplicationSettings().Configuration().EnableWebfrontConnectionWhitelist)
             {
-                app.UseMiddleware<IPWhitelist>(serviceProvider.GetService<ILogger<IPWhitelist>>(), serviceProvider.GetRequiredService<ApplicationConfiguration>().WebfrontConnectionWhitelist);
+                app.UseMiddleware<IPWhitelist>(serviceProvider.GetService<ILogger<IPWhitelist>>(),
+                    serviceProvider.GetRequiredService<ApplicationConfiguration>().WebfrontConnectionWhitelist);
             }
-
-            app.UseRateLimiter(new RateLimiterOptions()
-                .AddConcurrencyLimiter("concurrencyPolicy", (options) =>
-                {
-                    options.PermitLimit = 2;
-                    options.QueueLimit = 25;
-                    options.QueueProcessingOrder = QueueProcessingOrder.NewestFirst;
-                }));
 
             app.UseStaticFiles();
             app.UseAuthentication();
@@ -153,6 +159,7 @@ namespace WebfrontCore
 
             app.UseRouting();
             app.UseAuthorization();
+            app.UseRateLimiter();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}")

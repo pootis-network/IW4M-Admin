@@ -22,16 +22,14 @@ namespace IW4MAdmin.Application.Commands
             RequiresTarget = false;
         }
 
-        public override Task ExecuteAsync(GameEvent gameEvent)
+        public override async Task ExecuteAsync(GameEvent gameEvent)
         {
             var clientList = gameEvent.Owner.GetClientsAsList()
                 .Select(client =>
                     $"[(Color::Accent){client.ClientPermission.Name}(Color::White){(string.IsNullOrEmpty(client.Tag) ? "" : $" {client.Tag}")}(Color::White)][(Color::Yellow)#{client.ClientNumber}(Color::White)] {client.Name}")
                 .ToArray();
 
-            gameEvent.Origin.TellAsync(clientList, gameEvent.Owner.Manager.CancellationToken);
-
-            return Task.CompletedTask;
+            await gameEvent.Origin.TellAsync(clientList, gameEvent.Owner.Manager.CancellationToken);
         }
     }
 }

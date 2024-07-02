@@ -799,6 +799,8 @@ namespace SharedLibraryCore
         }
 
         public static async Task<Dvar<T>> GetDvarAsync<T>(this Server server, string dvarName,
+            // Suppressing as older plugins could reference old signature.
+            // ReSharper disable once MethodOverloadWithOptionalParameter
             T fallbackValue = default, CancellationToken token = default)
         {
             return await server.RconParser.GetDvarAsync(server.RemoteConnection, dvarName, fallbackValue, token);
@@ -818,9 +820,8 @@ namespace SharedLibraryCore
             var mappedKey = server.RconParser.GetOverrideDvarName(dvarName);
             var defaultValue = server.RconParser.GetDefaultDvarValue<T>(mappedKey) ?? overrideDefault;
 
-            var foundKey = infoResponse?.Keys
-                .Where(_key => new[] { mappedKey, dvarName, infoResponseName ?? dvarName }.Contains(_key))
-                .FirstOrDefault();
+            var foundKey = (infoResponse?.Keys ?? Enumerable.Empty<string>())
+                .FirstOrDefault(key => new[] { mappedKey, dvarName, infoResponseName ?? dvarName }.Contains(key));
 
             if (!string.IsNullOrEmpty(foundKey))
             {

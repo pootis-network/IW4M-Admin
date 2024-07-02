@@ -4,7 +4,7 @@ using ILogger = SharedLibraryCore.Interfaces.ILogger;
 
 namespace IW4MAdmin.Application.Misc
 {
-    [Obsolete]
+    [Obsolete("Use Microsoft.Extensions.Logging.ILogger instead")]
     public class Logger : ILogger
     {
         private readonly Microsoft.Extensions.Logging.ILogger _logger;

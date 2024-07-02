@@ -129,7 +129,7 @@
         .OrderBy(rating => rating.CreatedDateTime)
         .Select(rating => new PerformanceHistory { Performance = rating.PerformanceMetric, OccurredAt = rating.CreatedDateTime });
 
-    if (performance != null && performance != Model.Ratings.FirstOrDefault().PerformanceMetric)
+    if (performance != null && !Model.Ratings.FirstOrDefault().PerformanceMetric.Equals(performance))
     {
         performanceHistory = performanceHistory.Append(new PerformanceHistory { Performance = performance.Value, OccurredAt = Model.Ratings.FirstOrDefault()?.CreatedDateTime ?? DateTime.UtcNow });
     }

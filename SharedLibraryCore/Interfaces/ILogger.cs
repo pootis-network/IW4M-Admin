@@ -2,7 +2,7 @@
 
 namespace SharedLibraryCore.Interfaces
 {
-    [Obsolete]
+    [Obsolete("Use Microsoft.Extensions.Logging.ILogger instead")]
     public interface ILogger
     {
         void WriteVerbose(string msg);

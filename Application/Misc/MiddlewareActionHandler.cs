@@ -7,16 +7,10 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace IW4MAdmin.Application.Misc
 {
-    class MiddlewareActionHandler : IMiddlewareActionHandler
+    internal class MiddlewareActionHandler(ILogger<MiddlewareActionHandler> logger) : IMiddlewareActionHandler
     {
-        private readonly IDictionary<string, IList<object>> _actions;
-        private readonly ILogger _logger;
-
-        public MiddlewareActionHandler(ILogger<MiddlewareActionHandler> logger)
-        {
-            _actions = new Dictionary<string, IList<object>>();
-            _logger = logger;
-        }
+        private readonly Dictionary<string, IList<object>> _actions = new();
+        private readonly ILogger _logger = logger;
 
         /// <summary>
         /// Executes the action with the given name
@@ -27,23 +21,19 @@ namespace IW4MAdmin.Application.Misc
         /// <returns></returns>
         public async Task<T> Execute<T>(T value, string name = null)
         {
-            string key = string.IsNullOrEmpty(name) ? typeof(T).ToString() : name;
+            var key = string.IsNullOrEmpty(name) ? typeof(T).ToString() : name;
 
-            if (_actions.ContainsKey(key))
+            if (!_actions.TryGetValue(key, out var action1)) return value;
+            foreach (var action in action1)
             {
-                foreach (var action in _actions[key])
+                try
                 {
-                    try
-                    {
-                        value = await ((IMiddlewareAction<T>)action).Invoke(value);
-                    }
-                    catch (Exception e) 
-                    {
-                        _logger.LogWarning(e, "Failed to invoke middleware action {name}", name);
-                    }
+                    value = await ((IMiddlewareAction<T>)action).Invoke(value);
                 }
-
-                return value;
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, "Failed to invoke middleware action {Name}", name);
+                }
             }
 
             return value;
@@ -58,16 +48,15 @@ namespace IW4MAdmin.Application.Misc
         /// <param name="name">Name of action</param>
         public void Register<T>(T actionType, IMiddlewareAction<T> action, string name = null)
         {
-            string key = string.IsNullOrEmpty(name) ? typeof(T).ToString() : name;
+            var key = string.IsNullOrEmpty(name) ? typeof(T).ToString() : name;
 
-            if (_actions.ContainsKey(key))
+            if (_actions.TryGetValue(key, out var action1))
             {
-                _actions[key].Add(action);
+                action1.Add(action);
             }
-
             else
             {
-                _actions.Add(key, new[] { action });
+                _actions.Add(key, [action]);
             }
         }
     }

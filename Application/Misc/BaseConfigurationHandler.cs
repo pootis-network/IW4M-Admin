@@ -52,14 +52,11 @@ namespace IW4MAdmin.Application.Misc
                 await _onSaving.WaitAsync();
                 await using var fileStream = File.OpenRead(FileName);
                 _configuration = await JsonSerializer.DeserializeAsync<T>(fileStream, _serializerOptions);
-                await fileStream.DisposeAsync();
             }
-
             catch (FileNotFoundException)
             {
                 _configuration = default;
             }
-
             catch (Exception e)
             {
                 throw new ConfigurationException("Could not load configuration")
@@ -82,12 +79,9 @@ namespace IW4MAdmin.Application.Misc
             try
             {
                 await _onSaving.WaitAsync();
-
                 await using var fileStream = File.Create(FileName);
                 await JsonSerializer.SerializeAsync(fileStream, _configuration, _serializerOptions);
-                await fileStream.DisposeAsync();
             }
-
             finally
             {
                 if (_onSaving.CurrentCount == 0)

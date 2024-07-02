@@ -107,9 +107,7 @@ namespace SharedLibraryCore.Helpers
 
         private static int ParseVersion(string input)
         {
-            int version;
-
-            if (!int.TryParse(input, out version))
+            if (!int.TryParse(input, out var version))
             {
                 throw new FormatException(
                     "buildNumber string was not in a correct format");

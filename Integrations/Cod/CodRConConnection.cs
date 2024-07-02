@@ -201,7 +201,7 @@ namespace Integrations.Cod
                        DontFragment = false,
                        Ttl = 100,
                        ExclusiveAddressUse = true,
-                   })
+                   }!) // Suppressing "Initialize object properties inside the 'using' statement to ensure that the object is disposed if an exception is thrown during initialization"
             {
                 if (!token.IsCancellationRequested)
                 {

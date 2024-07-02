@@ -11,26 +11,15 @@ namespace IW4MAdmin.Application.Factories
     /// <summary>
     /// implementation of IGameServerInstanceFactory
     /// </summary>
-    internal class GameServerInstanceFactory : IGameServerInstanceFactory
+    /// <param name="translationLookup"></param>
+    /// <param name="metaService"></param>
+    /// <param name="serviceProvider"></param>
+    internal class GameServerInstanceFactory(
+        ITranslationLookup translationLookup,
+        IMetaServiceV2 metaService,
+        IServiceProvider serviceProvider)
+        : IGameServerInstanceFactory
     {
-        private readonly ITranslationLookup _translationLookup;
-        private readonly IMetaServiceV2 _metaService;
-        private readonly IServiceProvider _serviceProvider;
-
-        /// <summary>
-        /// base constructor
-        /// </summary>
-        /// <param name="translationLookup"></param>
-        /// <param name="rconConnectionFactory"></param>
-        public GameServerInstanceFactory(ITranslationLookup translationLookup,
-            IMetaServiceV2 metaService,
-            IServiceProvider serviceProvider)
-        {
-            _translationLookup = translationLookup;
-            _metaService = metaService;
-            _serviceProvider = serviceProvider;
-        }
-
         /// <summary>
         /// creates an IW4MServer instance
         /// </summary>
@@ -40,9 +29,9 @@ namespace IW4MAdmin.Application.Factories
         public Server CreateServer(ServerConfiguration config, IManager manager)
         {
             return new IW4MServer(config,
-                _serviceProvider.GetRequiredService<CommandConfiguration>(), _translationLookup, _metaService,
-                _serviceProvider, _serviceProvider.GetRequiredService<IClientNoticeMessageFormatter>(),
-                _serviceProvider.GetRequiredService<ILookupCache<EFServer>>());
+                serviceProvider.GetRequiredService<CommandConfiguration>(), translationLookup, metaService,
+                serviceProvider, serviceProvider.GetRequiredService<IClientNoticeMessageFormatter>(),
+                serviceProvider.GetRequiredService<ILookupCache<EFServer>>());
         }
     }
 }

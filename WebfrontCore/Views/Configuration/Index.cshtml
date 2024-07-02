@@ -89,7 +89,7 @@
 
                             else if (hasLinkedParent(property))
                             {
-                                <div id="@($"{property.Name}_content")" class="@(linkedPropertyNames.Length == 0 ? "hide" : "hide") bg-dark pl-3 pr-3 pb-2">
+                                <div id="@($"{property.Name}_content")" class="hide bg-dark pl-3 pr-3 pb-2">
                                     @if (linkedPropertyNames.Length == 0)
                                     {
                                         @Html.Label(property.Name, null, new {@class = "mt-2 d-block"})

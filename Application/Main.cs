@@ -213,7 +213,7 @@ namespace IW4MAdmin.Application
             var masterCommunicator = serviceProvider.GetRequiredService<IMasterCommunication>();
             var webfrontLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
             using var onWebfrontErrored = new ManualResetEventSlim();
-            
+
             var webfrontTask = _serverManager.GetApplicationSettings().Configuration().EnableWebFront
                 ? WebfrontCore.Program.GetWebHostTask(_serverManager.CancellationToken).ContinueWith(continuation =>
                 {
@@ -226,9 +226,9 @@ namespace IW4MAdmin.Application
                         continuation.Exception?.InnerException?.Message);
 
                     logger.LogDebug(continuation.Exception, "Unable to start webfront task");
-                    
-                    onWebfrontErrored.Set();
-                    
+
+                    // ReSharper disable once AccessToDisposedClosure
+                    onWebfrontErrored.Set(); // TODO: Check if this dispose warning is a roslyn issue.
                 })
                 : Task.CompletedTask;
 

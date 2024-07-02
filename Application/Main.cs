@@ -59,7 +59,7 @@ namespace IW4MAdmin.Application
         /// entrypoint of the application
         /// </summary>
         /// <returns></returns>
-        public static async Task Main(bool noConfirm = false, int? maxConcurrentRequests = 25, int? requestQueueLimit = 25)
+        public static async Task Main(bool noConfirm = false, int? maxConcurrentRequests = 40, int? requestQueueLimit = 40)
         {
             AppDomain.CurrentDomain.SetData("DataDirectory", Utilities.OperatingDirectory);
             AppDomain.CurrentDomain.AssemblyResolve += (sender, eventArgs) =>

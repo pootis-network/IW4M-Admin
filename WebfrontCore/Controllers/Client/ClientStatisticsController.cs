@@ -28,13 +28,14 @@ namespace WebfrontCore.Controllers
         }
 
         [HttpGet("{id:int}/advanced")]
-        public async Task<IActionResult> Advanced(int id, [FromQuery] string serverId, CancellationToken token = default)
+        public async Task<IActionResult> Advanced(int id, [FromQuery] string serverId, [FromQuery] string performanceBucket = null, CancellationToken token = default)
         {
             ViewBag.Config = _defaultConfig.GameStrings;
             var hitInfo = (await _queryHelper.QueryResource(new StatsInfoRequest
             {
                 ClientId = id,
-                ServerEndpoint = serverId
+                ServerEndpoint = serverId,
+                PerformanceBucket = performanceBucket
             }))?.Results?.First();
 
             if (hitInfo is null)
@@ -52,7 +53,7 @@ namespace WebfrontCore.Controllers
 
             foreach (var statMetricFunc in Manager.CustomStatsMetrics)
             {
-                await statMetricFunc(new Dictionary<int, List<EFMeta>> { { id, hitInfo.CustomMetrics } }, matchedServerId, null, false);
+                await statMetricFunc(new Dictionary<int, List<EFMeta>> { { id, hitInfo.CustomMetrics } }, matchedServerId, performanceBucket, false);
             }
 
             return View("~/Views/Client/Statistics/Advanced.cshtml", hitInfo);

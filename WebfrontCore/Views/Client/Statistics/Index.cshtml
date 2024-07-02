@@ -5,12 +5,12 @@
     <div class="col-12 col-lg-9 mt-0">
         <h2 class="content-title mb-0">@ViewBag.Localization["WEBFRONT_TOP_PLAYERS_TITLE"]</h2>
         <span class="text-muted">
-            <color-code value="@(Model.FirstOrDefault(m => m.Endpoint == ViewBag.SelectedServerId)?.Name ?? ViewBag.Localization["WEBFRONT_STATS_INDEX_ALL_SERVERS"])"></color-code>
+            <color-code value="@(ViewBag.SelectedPerformanceBucket ?? Model.FirstOrDefault(m => m.Endpoint == ViewBag.SelectedServerId)?.Name ?? ViewBag.Localization["WEBFRONT_STATS_INDEX_ALL_SERVERS"])"></color-code>
             &mdash; <span class="text-primary">@ViewBag.TotalRankedClients.ToString("#,##0")</span> @ViewBag.Localization["WEBFRONT_TOP_PLAYERS_SUBTITLE"]
         </span>
 
         <div id="topPlayersContainer">
-            @await Component.InvokeAsync("TopPlayers", new { count = 25, offset = 0, serverEndpoint = ViewBag.SelectedServerId })
+            @await Component.InvokeAsync("TopPlayers", new { count = 25, offset = 0, serverEndpoint = ViewBag.SelectedServerId, performanceBucket = ViewBag.SelectedPerformanceBucket })
         </div>
         <div class="text-center">
             <i id="loaderLoad" class="oi oi-chevron-bottom loader-load-more text-primary mt-5" aria-hidden="true"></i>
@@ -22,7 +22,21 @@
         var menuItems = new SideContextMenuItems
         {
             MenuTitle = ViewBag.Localization["WEBFRONT_CONTEXT_MENU_GLOBAL_GAME"],
-            Items = Model.Select(server => new SideContextMenuItem
+            Items = Model.GroupBy(server => server.PerformanceBucket).Where(grp => grp.Key is not null).Select(server => new SideContextMenuItem
+            {
+                IsLink = true,
+                Reference = Url.Action("TopPlayers", "Stats", new { performanceBucket = server.First().PerformanceBucket }),
+                Title = server.First().PerformanceBucket.StripColors(),
+                IsActive = ViewBag.SelectedPerformanceBucket == server.First().PerformanceBucket,
+                Meta = server.First().Game.ToString(),
+                IsCollapse = false
+            }).Prepend(new SideContextMenuItem
+            {
+                IsLink = true,
+                Reference = Url.Action("TopPlayers", "Stats"),
+                Title = ViewBag.Localization["WEBFRONT_STATS_INDEX_ALL_SERVERS"],
+                IsActive = ViewBag.SelectedServerId is null
+            }).Concat(Model.Select(server => new SideContextMenuItem
             {
                 IsLink = true,
                 Reference = Url.Action("TopPlayers", "Stats", new { serverId = server.Endpoint }),
@@ -30,13 +44,7 @@
                 IsActive = ViewBag.SelectedServerId == server.Endpoint,
                 Meta = server.Game.ToString(),
                 IsCollapse = true
-            }).Prepend(new SideContextMenuItem
-            {
-                IsLink = true,
-                Reference = Url.Action("TopPlayers", "Stats"),
-                Title = ViewBag.Localization["WEBFRONT_STATS_INDEX_ALL_SERVERS"],
-                IsActive = ViewBag.SelectedServerId is null
-            }).ToList()
+            })).ToList()
         };
     }
     <partial name="_SideContextMenu" for="@menuItems"></partial>
@@ -48,5 +56,5 @@
         <script type="text/javascript" src="~/js/stats.js"></script>
         <script type="text/javascript" src="~/lib/canvas.js/canvasjs.js"></script>
     </environment>
-    <script>initLoader('/Stats/GetTopPlayersAsync', '#topPlayersContainer', 25, 25, [{ 'name': 'serverId', 'value' : () => @(ViewBag.ServerId ?? 0) }]);</script>
+    <script>initLoader('/Stats/GetTopPlayersAsync', '#topPlayersContainer', 25, 25, [{ 'name': 'serverId', 'value' : () => @(ViewBag.ServerId ?? 0) }, { 'name': 'performanceBucket', 'value' : () => '@ViewBag.SelectedPerformanceBucket' }]);</script>
 }

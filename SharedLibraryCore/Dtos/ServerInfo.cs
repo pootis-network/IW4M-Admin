@@ -43,5 +43,6 @@ namespace SharedLibraryCore.Dtos
             }
         }
         public Reference.Game Game { get; set; }
+        public string PerformanceBucket { get; set; }
     }
 }

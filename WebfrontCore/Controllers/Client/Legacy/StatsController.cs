@@ -46,12 +46,13 @@ namespace WebfrontCore.Controllers.Client.Legacy
         }
 
         [HttpGet]
-        public async Task<IActionResult> TopPlayers(string serverId = null, CancellationToken token = default)
+        public async Task<IActionResult> TopPlayers(string serverId = null, string performanceBucket = null, CancellationToken token = default)
         {
             ViewBag.Title = Utilities.CurrentLocalization.LocalizationIndex["WEBFRONT_STATS_INDEX_TITLE"];
             ViewBag.Description = Utilities.CurrentLocalization.LocalizationIndex["WEBFRONT_STATS_INDEX_DESC"];
             ViewBag.Localization = _translationLookup;
             ViewBag.SelectedServerId = serverId;
+            ViewBag.SelectedPerformanceBucket = performanceBucket;
             
             var server = _manager.GetServers().FirstOrDefault(server => server.Id == serverId) as IGameServer;
             long? matchedServerId = null;
@@ -61,7 +62,7 @@ namespace WebfrontCore.Controllers.Client.Legacy
                 matchedServerId = server.LegacyDatabaseId;
             }
             
-            ViewBag.TotalRankedClients = await _serverDataViewer.RankedClientsCountAsync(matchedServerId, null, token);
+            ViewBag.TotalRankedClients = await _serverDataViewer.RankedClientsCountAsync(matchedServerId, performanceBucket, token);
             ViewBag.ServerId = matchedServerId;
 
             return View("~/Views/Client/Statistics/Index.cshtml", _manager.GetServers()
@@ -70,12 +71,13 @@ namespace WebfrontCore.Controllers.Client.Legacy
                     Name = selectedServer.Hostname,
                     IPAddress = selectedServer.ListenAddress,
                     Port = selectedServer.ListenPort,
-                    Game = selectedServer.GameCode
+                    Game = selectedServer.GameCode,
+                    PerformanceBucket = selectedServer.PerformanceBucket
                 }));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTopPlayersAsync(int count, int offset, long? serverId = null)
+        public async Task<IActionResult> GetTopPlayersAsync(int count, int offset, long? serverId = null, string performanceBucket = null)
         {
             // this prevents empty results when we really want aggregate
             if (serverId == 0)
@@ -89,7 +91,7 @@ namespace WebfrontCore.Controllers.Client.Legacy
             }
 
             var results = _config?.EnableAdvancedMetrics ?? true
-                ? await _statManager.GetNewTopStats(offset, count, serverId)
+                ? await _statManager.GetNewTopStats(offset, count, serverId, performanceBucket)
                 : await _statManager.GetTopStats(offset, count, serverId);
 
             // this returns an empty result so we know to stale the loader

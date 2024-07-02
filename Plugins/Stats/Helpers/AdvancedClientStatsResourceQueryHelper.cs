@@ -54,7 +54,7 @@ namespace Stats.Helpers
             }
 
             // gets all the hit stats for the client
-            var hitStats = await context.Set<EFClientHitStatistic>()
+            var iqHitStats = context.Set<EFClientHitStatistic>()
                 .Include(stat => stat.HitLocation)
                 .Include(stat => stat.MeansOfDeath)
                 .Include(stat => stat.Weapon)
@@ -64,9 +64,13 @@ namespace Stats.Helpers
                 .ThenInclude(attachment => attachment.Attachment2)
                 .Include(stat => stat.WeaponAttachmentCombo)
                 .ThenInclude(attachment => attachment.Attachment3)
-                .Where(stat => stat.ClientId == query.ClientId)
-                .Where(stat => stat.ServerId == serverId)
-                .ToListAsync();
+                .Where(stat => stat.ClientId == query.ClientId);
+
+            iqHitStats = !string.IsNullOrEmpty(query.PerformanceBucket)
+                ? iqHitStats.Where(stat => stat.Server.PerformanceBucket == query.PerformanceBucket)
+                : iqHitStats.Where(stat => stat.ServerId == serverId);
+
+            var hitStats = await iqHitStats.ToListAsync();
 
             var ratings = await context.Set<EFClientRankingHistory>()
                 .Where(r => r.ClientId == clientInfo.ClientId)
@@ -91,6 +95,7 @@ namespace Stats.Helpers
             var legacyStats = await context.Set<EFClientStatistics>()
                 .Where(stat => stat.ClientId == query.ClientId)
                 .Where(stat => serverId == null || stat.ServerId == serverId)
+                .Where(stat => stat.Server.PerformanceBucket == query.PerformanceBucket)
                 .ToListAsync();
 
             var bucketConfig = await statManager.GetBucketConfig(serverId);
@@ -120,12 +125,13 @@ namespace Stats.Helpers
                     .Select(server => new ServerInfo
                     {
                         Name = server.Hostname, IPAddress = server.ListenAddress, Port = server.ListenPort,
-                        Game = (Reference.Game)server.GameName
+                        Game = (Reference.Game)server.GameName,
+                        PerformanceBucket = server.PerformanceBucket
                     })
                     .Where(server => server.Game == clientInfo.GameName)
                     .ToList(),
                 Aggregate = hitStats.FirstOrDefault(hit =>
-                    hit.HitLocationId == null && hit.ServerId == serverId && hit.WeaponId == null &&
+                    hit.HitLocationId == null && (string.IsNullOrEmpty(query.PerformanceBucket) || hit.ServerId == serverId) && hit.WeaponId == null &&
                     hit.MeansOfDeathId == null),
                 ByHitLocation = hitStats
                     .Where(hit => hit.HitLocationId != null)

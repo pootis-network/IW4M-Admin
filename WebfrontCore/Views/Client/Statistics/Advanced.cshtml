@@ -248,7 +248,7 @@
     <div class="col-12 col-lg-9 mt-0">
         <h2 class="content-title mb-0">@ViewBag.Title</h2>
         <span class="text-muted">
-            <color-code value="@(Model.Servers.FirstOrDefault(server => server.Endpoint == Model.ServerEndpoint)?.Name ?? ViewBag.Localization["WEBFRONT_STATS_INDEX_ALL_SERVERS"])"></color-code>
+            <color-code value="@(Model.PerformanceBucket ?? Model.Servers.FirstOrDefault(server => server.Endpoint == Model.ServerEndpoint)?.Name ?? ViewBag.Localization["WEBFRONT_STATS_INDEX_ALL_SERVERS"])"></color-code>
         </span>
 
         <!-- top card -->
@@ -390,7 +390,15 @@
         var menuItems = new SideContextMenuItems
         {
             MenuTitle = ViewBag.Localization["WEBFRONT_CONTEXT_MENU_GLOBAL_GAME"],
-            Items = Model.Servers.Select(server => new SideContextMenuItem
+            Items = Model.Servers.GroupBy(server => server.PerformanceBucket).Where(grp => grp.Key is not null).Select(server => new SideContextMenuItem
+            {
+                IsLink = true,
+                Reference = Url.Action("Advanced", "ClientStatistics", new { performanceBucket = server.First().PerformanceBucket }),
+                Title = server.First().PerformanceBucket.StripColors(),
+                IsActive = ViewBag.SelectedPerformanceBucket == server.First().PerformanceBucket,
+                Meta = server.First().Game.ToString(),
+                IsCollapse = false
+            }).Concat(Model.Servers.Select(server => new SideContextMenuItem
             {
                 IsLink = true,
                 Reference = Url.Action("Advanced", "ClientStatistics", new { serverId = server.Endpoint }),
@@ -398,7 +406,7 @@
                 IsActive = Model.ServerEndpoint == server.Endpoint,
                 IsCollapse = true,
                 Meta = server.Game.ToString()
-            }).Prepend(new SideContextMenuItem
+            })).Prepend(new SideContextMenuItem
             {
                 IsLink = true,
                 Reference = Url.Action("Advanced", "ClientStatistics"),

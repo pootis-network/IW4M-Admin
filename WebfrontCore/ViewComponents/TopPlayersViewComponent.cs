@@ -19,7 +19,7 @@ namespace WebfrontCore.ViewComponents
             _statManager = statManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int count, int offset, string serverEndpoint = null)
+        public async Task<IViewComponentResult> InvokeAsync(int count, int offset, string serverEndpoint = null, string performanceBucket = null)
         {
             var server = Plugin.ServerManager.GetServers()
                 .FirstOrDefault(server => server.Id == serverEndpoint) as IGameServer;
@@ -28,10 +28,11 @@ namespace WebfrontCore.ViewComponents
 
             ViewBag.UseNewStats = _config?.EnableAdvancedMetrics ?? true;
             ViewBag.SelectedServerName = server?.ServerName;
+            ViewBag.SelectedServerBucket = performanceBucket;
             
             return View("~/Views/Client/Statistics/Components/TopPlayers/_List.cshtml",
                 ViewBag.UseNewStats
-                    ? await _statManager.GetNewTopStats(offset, count, serverId)
+                    ? await _statManager.GetNewTopStats(offset, count, serverId, performanceBucket)
                     : await _statManager.GetTopStats(offset, count, serverId));
         }
     }

@@ -61,8 +61,6 @@ if ($fileDownload.StatusDescription -ne "OK")
     throw "Could not update IW4MAdmin. ($fileDownload.StatusDescription)"
 }
 
-$remoteHash = $fileDownload.Headers['Content-MD5']
-$decodedHash = [System.BitConverter]::ToString([System.Convert]::FromBase64String($remoteHash)).replace('-', '')
 $directoryPath = Get-Location
 $fullPath = "$directoryPath\$filename"
 $outputFile = [System.IO.File]::Open($fullPath, 2)
@@ -86,13 +84,6 @@ finally
 {
     $stream.Dispose()
     $outputFile.Dispose()
-}
-
-$localHash = (Get-FileHash -Path $fullPath -Algorithm MD5).Hash
-
-if ($localHash -ne $decodedHash)
-{
-    throw "Failed to update. File hashes don't match!"
 }
 
 Write-Output "Extracting $filename to $outputDir"

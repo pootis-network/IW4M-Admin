@@ -40,11 +40,11 @@ var plugin = {
 
         rconParser.Configuration.Status.AddMapping(105, 6); // ip address
         rconParser.Configuration.GametypeStatus.AddMapping(112, 1); // gametype
-        rconParser.Version = '[local] ship win64 CODBUILD8-764 (3421987) Mon Dec 16 10:44:20 2019 10d27bef';
+        rconParser.Version = '[local] ship win64 CODBUILD8-764 (3421987) Mon Dec 16 10:44:20 2019 10d27bef (Retail)';
         rconParser.GameName = 8; // BO3
         rconParser.CanGenerateLogPath = false;
 
-        eventParser.Version = '[local] ship win64 CODBUILD8-764 (3421987) Mon Dec 16 10:44:20 2019 10d27bef';
+        eventParser.Version = '[local] ship win64 CODBUILD8-764 (3421987) Mon Dec 16 10:44:20 2019 10d27bef (Retail)';
         eventParser.GameName = 8; // BO3
         eventParser.Configuration.GameDirectory = 'usermaps';
         eventParser.Configuration.Say.Pattern = '^(chat|chatteam);(?:[0-9]+);([0-9]+);([0-9]+);(.+);(.*)$';

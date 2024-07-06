@@ -47,7 +47,7 @@ const plugin = {
 
         const storedConfig = this.configWrapper.getValue('config', newConfig => {
             if (newConfig) {
-                plugin.logger.logInformation('{Name} config reloaded.', plugin.name);
+                plugin.logger.logInformation('[GameInterface] {Name} config reloaded. Polling rate is {Rate}', plugin.name, newConfig.pollingRate);
                 plugin.config = newConfig;
             }
         });
@@ -61,10 +61,12 @@ const plugin = {
 
     onClientEnteredMatch: function (clientEvent) {
         const serverState = servers[clientEvent.client.currentServer.id];
+        this.logger.logDebug('[GameInterface] client entered match {id}, currentState={@state}', clientEvent.client.currentServer.id, serverState);
 
         if (serverState === undefined || serverState == null) {
             this.initializeServer(clientEvent.client.currentServer);
         } else if (!serverState.running && !serverState.initializationInProgress) {
+            this.logger.logDebug('[GameInterface] starting game interface loop');
             serverState.running = true;
             this.requestGetDvar(inDvar, clientEvent.client.currentServer);
         }
@@ -91,23 +93,23 @@ const plugin = {
         }
     },
 
-    onServerValueSetCompleted: async function (serverValueEvent) {
-        this.logger.logDebug('Set {dvarName}={dvarValue} success={success} from {server}', serverValueEvent.valueName,
+    onServerValueSetCompleted: function (serverValueEvent) {
+        this.logger.logDebug('[GameInterface] set {dvarName}={dvarValue} success={success} from {server}', serverValueEvent.valueName,
             serverValueEvent.value, serverValueEvent.success, serverValueEvent.server.id);
 
         if (serverValueEvent.valueName !== inDvar && serverValueEvent.valueName !== outDvar) {
-            this.logger.logDebug('Ignoring set complete of {name}', serverValueEvent.valueName);
+            this.logger.logDebug('[GameInterface] ignoring set complete of {name}', serverValueEvent.valueName);
             return;
         }
 
         const serverState = servers[serverValueEvent.server.id];
         serverState.outQueue.shift();
 
-        this.logger.logDebug('outQueue len = {outLen}, inQueue len = {inLen}', serverState.outQueue.length, serverState.inQueue.length);
+        this.logger.logDebug('[GameInterface] outQueue len = {outLen}, inQueue len = {inLen}', serverState.outQueue.length, serverState.inQueue.length);
 
         // if it didn't succeed, we need to retry
         if (!serverValueEvent.success && !this.eventManager.cancellationToken.isCancellationRequested) {
-            this.logger.logDebug('Set of server value failed... retrying');
+            this.logger.logWarning('[GameInterface] set of server value failed... retrying');
             this.requestSetDvar(serverValueEvent.valueName, serverValueEvent.value, serverValueEvent.server);
             return;
         }
@@ -117,10 +119,14 @@ const plugin = {
             const input = serverState.inQueue.shift();
 
             // if we queued an event then the next loop will be at the value set complete
-            await this.processEventMessage(input, serverValueEvent.server);
+            try {
+                this.processEventMessage(input, serverValueEvent.server);
+            } catch (ex) {
+                this.logger.logError('[GameInterface] could not process event message: {exception}', ex.toString());
+            }
         }
 
-        this.logger.logDebug('loop complete');
+        this.logger.logDebug('[GameInterface] loop complete');
         // loop restarts
         this.requestGetDvar(inDvar, serverValueEvent.server);
     },
@@ -139,25 +145,25 @@ const plugin = {
             enabled: false,
             running: false,
             initializationInProgress: true,
-            queuedMessages: [],
             inQueue: [],
             outQueue: [],
             commandQueue: []
         };
 
-        this.logger.logDebug('Initializing game interface for {serverId}', server.id);
+        this.logger.logDebug('[GameInterface] initializing game interface for {serverId}', server.id);
         this.requestGetDvar(integrationEnabledDvar, server);
     },
 
     handleInitializeServerData: function (responseEvent) {
-        this.logger.logInformation('GSC integration enabled = {integrationValue} for {server}',
-            responseEvent.response.value, responseEvent.server.id);
+        const serverState = servers[responseEvent.server.id];
 
         if (responseEvent.response.value !== '1') {
+            this.logger.logInformation('[GameInterface] gsc integration is disabled for {server}', responseEvent.server.id);
             return;
         }
 
-        const serverState = servers[responseEvent.server.id];
+        this.logger.logInformation('[GameInterface] gsc integration is enabled for {server}', responseEvent.server.id);
+
         serverState.outQueue.shift();
         serverState.enabled = true;
         serverState.running = true;
@@ -172,7 +178,7 @@ const plugin = {
     },
 
     handleIncomingServerData: function (responseEvent) {
-        this.logger.logDebug('Received {dvarName}={dvarValue} success={success} from {server}', responseEvent.response.name,
+        this.logger.logDebug('[GameInterface] received {dvarName}={dvarValue} success={success} from {server}', responseEvent.response.name,
             responseEvent.response.value, responseEvent.success, responseEvent.server.id);
 
         const serverState = servers[responseEvent.server.id];
@@ -182,13 +188,14 @@ const plugin = {
 
         if (responseEvent.server.connectedClients.count === 0 && !utilities.isDevelopment) {
             // no clients connected so we don't need to query
+            this.logger.logDebug('[GameInterface] stopping game interface loop');
             serverState.running = false;
             return;
         }
 
         // read failed, so let's retry
         if (!responseEvent.success && !this.eventManager.cancellationToken.isCancellationRequested) {
-            this.logger.logDebug('Get of server value failed... retrying');
+            this.logger.logWarning('[GameInterface] get of server value failed... retrying');
             this.requestGetDvar(responseEvent.response.name, responseEvent.server);
             return;
         }
@@ -197,14 +204,15 @@ const plugin = {
         const server = responseEvent.server;
 
         if (this.eventManager.cancellationToken.isCancellationRequested) {
+            this.logger.logDebug('[GameInterface] shutdown requested so we are ending loop');
             return;
         }
 
         // no data available so we poll again or send any outgoing messages
         if (isEmpty(input)) {
-            this.logger.logDebug('No data to process from server');
+            this.logger.logDebug('[GameInterface] no data to process from server');
             if (serverState.commandQueue.length > 0) {
-                this.logger.logDebug('Sending next out message');
+                this.logger.logDebug('[GameInterface] sending next out message');
                 const nextMessage = serverState.commandQueue.shift();
                 this.requestSetDvar(outDvar, nextMessage, server);
             } else {
@@ -219,11 +227,11 @@ const plugin = {
         this.requestSetDvar(inDvar, '', server);
     },
 
-    processEventMessage: async function (input, server) {
+    processEventMessage: function (input, server) {
         let messageQueued = false;
         const event = parseEvent(input);
 
-        this.logger.logDebug('Processing input... {eventType} {subType} {@data} {clientNumber}', event.eventType,
+        this.logger.logDebug('[GameInterface] processing input... {eventType} {subType} {@data} {clientNumber}', event.eventType,
             event.subType, event.data, event.clientNumber);
 
         const metaService = this.serviceResolver.ResolveService('IMetaServiceV2');
@@ -233,22 +241,22 @@ const plugin = {
 
         // todo: refactor to mapping if possible
         if (event.eventType === 'ClientDataRequested') {
-            const client = server.connectedClients[event.clientNumber];
+            const client = server.getClientByNumber(event.clientNumber);
 
             if (client != null) {
-                this.logger.logDebug('Found client {name}', client.name);
+                this.logger.logDebug('[GameInterface] Found client {name}', client.name);
 
                 let data = [];
 
                 const metaService = this.serviceResolver.resolveService('IMetaServiceV2');
 
                 if (event.subType === 'Meta') {
-                    const meta = (await metaService.getPersistentMeta(event.data, client.clientId, token)).result;
+                    const meta = (metaService.getPersistentMeta(event.data, client.clientId, token)).result;
                     data[event.data] = meta === null ? '' : meta.Value;
-                    this.logger.logDebug('event data is {data}', event.data);
+                    this.logger.logDebug('[GameInterface] event data is {data}', event.data);
                 } else {
                     const clientStats = getClientStats(client, server);
-                    const tagMeta = (await metaService.getPersistentMetaByLookup('ClientTagV2', 'ClientTagNameV2', client.clientId, token)).result;
+                    const tagMeta = (metaService.getPersistentMetaByLookup('ClientTagV2', 'ClientTagNameV2', client.clientId, token)).result;
                     data = {
                         level: client.level,
                         clientId: client.clientId,
@@ -261,7 +269,7 @@ const plugin = {
                 this.sendEventMessage(server, false, 'ClientDataReceived', event.subType, client, undefined, data);
                 messageQueued = true;
             } else {
-                this.logger.logWarning('Could not find client slot {clientNumber} when processing {eventType}', event.clientNumber, event.eventType);
+                this.logger.logWarning('[GameInterface] could not find client slot {clientNumber} when processing {eventType}', event.clientNumber, event.eventType);
                 this.sendEventMessage(server, false, 'ClientDataReceived', 'Fail', event.clientNumber, undefined, {
                     ClientNumber: event.clientNumber
                 });
@@ -271,7 +279,7 @@ const plugin = {
 
         let _;
         if (event.eventType === 'SetClientDataRequested') {
-            let client = server.connectedClients[event.clientNumber];
+            let client = server.getClientByNumber(event.clientNumber);
             let clientId;
 
             if (client != null) {
@@ -280,10 +288,10 @@ const plugin = {
                 clientId = parseInt(event.data['clientId']);
             }
 
-            this.logger.logDebug('ClientId={clientId}', clientId);
+            this.logger.logDebug('[GameInterface] clientId={clientId}', clientId);
 
             if (clientId == null || isNaN(clientId)) {
-                this.logger.logWarning('Could not find client slot {clientNumber} when processing {eventType}: {EventData}', event.clientNumber, event.eventType, event.data);
+                this.logger.logWarning('[GameInterface] could not find client slot {clientNumber} when processing {eventType}: {EventData}', event.clientNumber, event.eventType, event.data);
                 this.sendEventMessage(server, false, 'SetClientDataCompleted', 'Meta', {
                     ClientNumber: event.clientNumber
                 }, undefined, {
@@ -294,17 +302,17 @@ const plugin = {
                 if (event.subType === 'Meta') {
                     try {
                         if (event.data['value'] != null && event.data['key'] != null) {
-                            this.logger.logDebug('Key={key}, Value={value}, Direction={direction} {token}', event.data['key'], event.data['value'], event.data['direction'], token);
+                            this.logger.logDebug('[GameInterface] key={key}, value={value}, direction={direction} {token}', event.data['key'], event.data['value'], event.data['direction'], token);
                             if (event.data['direction'] != null) {
                                 const parsedValue = parseInt(event.data['value']);
                                 const key = event.data['key'].toString();
                                 if (!isNaN(parsedValue)) {
                                     _ = event.data['direction'] === 'increment' ?
-                                        (await metaService.incrementPersistentMeta(key, parsedValue, clientId, token)).result :
-                                        (await metaService.decrementPersistentMeta(key, parsedValue, clientId, token)).result;
+                                        (metaService.incrementPersistentMeta(key, parsedValue, clientId, token)).result :
+                                        (metaService.decrementPersistentMeta(key, parsedValue, clientId, token)).result;
                                 }
                             } else {
-                                _ = (await metaService.setPersistentMeta(event.data['key'], event.data['value'], clientId, token)).result;
+                                _ = (metaService.setPersistentMeta(event.data['key'], event.data['value'], clientId, token)).result;
                             }
 
                             if (event.data['key'] === 'PersistentClientGuid') {
@@ -325,7 +333,7 @@ const plugin = {
                         }, undefined, {
                             status: 'Fail'
                         });
-                        this.logger.logError('Could not persist client meta {Key}={Value} {error} for {Client}', event.data['key'], event.data['value'], error.toString(), clientId);
+                        this.logger.logError('[GameInterface] could not persist client meta {Key}={Value} {error} for {Client}', event.data['key'], event.data['value'], error.toString(), clientId);
                         messageQueued = true;
                     }
                 }
@@ -335,17 +343,17 @@ const plugin = {
         if (event.eventType === 'UrlRequested') {
             const urlRequest = this.parseUrlRequest(event);
 
-            this.logger.logDebug('Making gamescript web request {@Request}', urlRequest);
+            this.logger.logDebug('[GameInterface] making gamescript web request {@Request}', urlRequest);
 
             this.scriptHelper.requestUrl(urlRequest, response => {
-                this.logger.logDebug('Got response for gamescript web request - {Response}', response);
+                this.logger.logDebug('[GameInterface] got response for gamescript web request - {Response}', response);
 
                 if (typeof response !== 'string' && !(response instanceof String)) {
                     response = JSON.stringify(response);
                 }
 
                 const max = 10;
-                this.logger.logDebug(`response length ${response.length}`);
+                this.logger.logDebug('[GameInterface] web url response length={length}', response.length);
 
                 let quoteReplace = '\\"';
                 // todo: may be more than just T6
@@ -355,10 +363,10 @@ const plugin = {
 
                 let chunks = chunkString(response.replace(/"/gm, quoteReplace).replace(/[\n|\t]/gm, ''), 800);
                 if (chunks.length > max) {
-                    this.logger.logWarning(`Response chunks greater than max (${max}). Data truncated!`);
+                    this.logger.logWarning('[GameInterface] response chunks greater than max ({max}). Data truncated!', max);
                     chunks = chunks.slice(0, max);
                 }
-                this.logger.logDebug(`chunk size ${chunks.length}`);
+                this.logger.logDebug('[GameInterface] response chunk size={Length}', chunks.length);
 
                 for (let i = 0; i < chunks.length; i++) {
                     this.sendEventMessage(server, false, 'UrlRequestCompleted', null, null,
@@ -375,13 +383,15 @@ const plugin = {
             if (event.data?.directory && event.data?.mode) {
                 busMode = event.data.mode;
                 busDir = event.data.directory.replace('\'', '').replace('"', '');
-                if (event.data?.inLocation && event.data?.outLocation) {
+                if (event.data?.inLocation && event.data?.outLocation && busMode === 'file') {
                     busFileIn = event.data?.inLocation;
                     busFileOut = event.data?.outLocation;
                 }
-                this.logger.logDebug('Setting bus mode to {mode} {dir}', busMode, busDir);
+                this.logger.logDebug('[GameInterface] setting bus mode to {mode} dir={dir}', busMode, busDir);
             }
         }
+
+        this.logger.logDebug('[GameInterface] finished processing input for {type}', event.eventType);
 
         tokenSource.dispose();
         return messageQueued;
@@ -400,7 +410,7 @@ const plugin = {
         }
 
         const output = `${responseExpected ? '1' : '0'}${groupSeparatorChar}${event}${groupSeparatorChar}${subtype}${groupSeparatorChar}${originClientNumber}${groupSeparatorChar}${targetClientNumber}${groupSeparatorChar}${buildDataString(data)}`;
-        this.logger.logDebug('Queuing output for server {output}', output);
+        this.logger.logDebug('[GameInterface] queuing output for server {output}', output);
 
         servers[server.id].commandQueue.push(output);
     },
@@ -424,7 +434,7 @@ const plugin = {
                         }
                     });
                 } catch (e) {
-                    plugin.logger.logError('Could not get bus data {exception}', e.toString());
+                    plugin.logger.logError('[GameInterface] could not get bus data {exception}', e.toString());
                     plugin.onServerValueReceived({
                         server: server,
                         success: false,
@@ -451,18 +461,18 @@ const plugin = {
 
             if (diff < extraDelay) {
                 requestEvent.delayMs = (extraDelay - diff) + this.config.pollingRate;
-                this.logger.logDebug('Increasing delay time to {Delay}ms due to recent map change', requestEvent.delayMs);
+                this.logger.logDebug('[GameInterface] increasing polling delay time to {Delay}ms due to recent map change', requestEvent.delayMs);
             }
         }
 
-        this.logger.logDebug('requesting {dvar}', dvarName);
+        this.logger.logDebug('[GameInterface] requesting {dvar}', dvarName);
 
         serverState.outQueue.push(requestEvent);
 
         if (serverState.outQueue.length <= 1) {
             this.eventManager.queueEvent(requestEvent);
         } else {
-            this.logger.logError('[requestGetDvar] Queue is full!');
+            this.logger.logError('[GameInterface::requestGetDvar] queue is full!');
         }
     },
 
@@ -470,14 +480,14 @@ const plugin = {
         const serverState = servers[server.id];
 
         if (busMode === 'file') {
-            this.scriptHelper.requestNotifyAfterDelay(250, async () => {
+            this.scriptHelper.requestNotifyAfterDelay(250, () => {
                 const io = importNamespace('System.IO');
                 try {
                     const path = `${busDir}/${fileForDvar(dvarName)}`;
-                    plugin.logger.logDebug('writing {value} to {file}', dvarValue, path);
+                    plugin.logger.logDebug('[GameInterface] writing {value} to {file}', dvarValue, path);
                     io.File.WriteAllText(path, dvarValue);
                     serverState.outQueue.push({});
-                    await plugin.onServerValueSetCompleted({
+                    plugin.onServerValueSetCompleted({
                         server: server,
                         source: server,
                         success: true,
@@ -485,8 +495,8 @@ const plugin = {
                         valueName: dvarName,
                     });
                 } catch (e) {
-                    plugin.logger.logError('Could not set bus data {exception}', e.toString());
-                    await plugin.onServerValueSetCompleted({
+                    plugin.logger.logError('[GameInterface] could not set bus data {exception}', e.toString());
+                    plugin.onServerValueSetCompleted({
                         server: server,
                         success: false,
                         valueName: dvarName,
@@ -511,19 +521,19 @@ const plugin = {
 
             if (diff < extraDelay) {
                 requestEvent.delayMs = (extraDelay - diff) + this.config.pollingRate;
-                this.logger.logDebug('Increasing delay time to {Delay}ms due to recent map change', requestEvent.delayMs);
+                this.logger.logInformation('[GameInterface] increasing delay time to {Delay}ms due to recent map change', requestEvent.delayMs);
             }
         }
 
         serverState.outQueue.push(requestEvent);
 
-        this.logger.logDebug('outQueue size = {length}', serverState.outQueue.length);
+        this.logger.logDebug('[GameInterface] outQueue size = {length}', serverState.outQueue.length);
 
         // if this is the only item in the out-queue we can send it immediately
         if (serverState.outQueue.length === 1) {
             this.eventManager.queueEvent(requestEvent);
         } else {
-            this.logger.logError('[requestSetDvar] Queue is full!');
+            this.logger.logError('[GameInterface::requestSetDvar] queue is full!');
         }
     },
 
@@ -531,7 +541,7 @@ const plugin = {
         const url = event.data?.url;
 
         if (url === undefined) {
-            this.logger.logWarning('No url provided for gamescript web request - {Event}', event);
+            this.logger.logWarning('[GameInterface] no url provided for gamescript web request - {@event}', event);
             return;
         }
 

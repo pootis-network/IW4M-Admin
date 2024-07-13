@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data.Models;
+using IW4MAdmin.Plugins.Stats.Events;
 using Microsoft.Extensions.Logging;
 using SharedLibraryCore.Events.Game;
 using SharedLibraryCore.Interfaces.Events;
@@ -202,7 +203,17 @@ namespace IW4MAdmin.Application.EventParsers
                 var createdEvent = _gameScriptEventFactory.Create(split[0], logLine.Replace(split[0], ""));
                 if (createdEvent is not null)
                 {
-                    createdEvent.ParseArguments();
+                    var eventTypeName = createdEvent.GetType().Name;
+                    var isParseIgnoredEvent = eventTypeName is nameof(GameScriptEvent) or nameof(AntiCheatDamageEvent);
+
+                    // avoid parsing base script event (which has no viable properties) 
+                    // and anticheat events as they are manually mapped.
+                    // for performance as dynamic "Invoke" is relatively costly due
+                    if (isParseIgnoredEvent)
+                    {
+                        createdEvent.ParseArguments();
+                    }
+
                     return createdEvent as GameEventV2;
                 }
             }

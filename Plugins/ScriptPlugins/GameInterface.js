@@ -262,7 +262,8 @@ const plugin = {
                         clientId: client.clientId,
                         lastConnection: client.timeSinceLastConnectionString,
                         tag: tagMeta?.value ?? '',
-                        performance: clientStats?.performance ?? 200.0
+                        performance: clientStats?.performance ?? 200.0,
+                        ipAddress: client.ipAddressString
                     };
                 }
 

@@ -38,12 +38,12 @@ namespace IW4MAdmin.WebfrontCore
         public void ConfigureServices(IServiceCollection services)
         {
             // allow CORS
-            services.AddCors(_options =>
+            services.AddCors(options =>
             {
-                _options.AddPolicy("AllowAll",
-                    _builder =>
+                options.AddPolicy("AllowAll",
+                    builder =>
                     {
-                        _builder.AllowAnyOrigin()
+                        builder.AllowAnyOrigin()
                             .AllowAnyMethod()
                             .AllowAnyHeader();
                     });
@@ -62,21 +62,6 @@ namespace IW4MAdmin.WebfrontCore
                 opt.QueueProcessingOrder = QueueProcessingOrder.NewestFirst;
             }));
 
-            IEnumerable<Assembly> pluginAssemblies()
-            {
-                string pluginDir = $"{Utilities.OperatingDirectory}Plugins{Path.DirectorySeparatorChar}";
-
-                if (Directory.Exists(pluginDir))
-                {
-                    var dllFileNames =
-                        Directory.GetFiles($"{Utilities.OperatingDirectory}Plugins{Path.DirectorySeparatorChar}",
-                            "*.dll");
-                    return dllFileNames.Select(_file => Assembly.LoadFrom(_file));
-                }
-
-                return Enumerable.Empty<Assembly>();
-            }
-
             // Add framework services.
             var mvcBuilder = services.AddMvc(options => options.SuppressAsyncSuffixInActionNames = false);
             services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
@@ -84,15 +69,15 @@ namespace IW4MAdmin.WebfrontCore
 #if DEBUG
             {
                 mvcBuilder = mvcBuilder.AddRazorRuntimeCompilation();
-                services.Configure<RazorViewEngineOptions>(_options =>
+                services.Configure<RazorViewEngineOptions>(options =>
                 {
-                    _options.ViewLocationFormats.Add(@"/Views/Plugins/{1}/{0}" + RazorViewEngine.ViewExtension);
-                    _options.ViewLocationFormats.Add("/Views/Plugins/Stats/Advanced.cshtml");
+                    options.ViewLocationFormats.Add(@"/Views/Plugins/{1}/{0}" + RazorViewEngine.ViewExtension);
+                    options.ViewLocationFormats.Add("/Views/Plugins/Stats/Advanced.cshtml");
                 });
             }
 #endif
 
-            foreach (var asm in pluginAssemblies())
+            foreach (var asm in PluginAssemblies())
             {
                 mvcBuilder.AddApplicationPart(asm);
             }
@@ -112,22 +97,32 @@ namespace IW4MAdmin.WebfrontCore
             services.AddTransient<IValidator<FindClientRequest>, FindClientRequestValidator>();
             services.AddSingleton<IResourceQueryHelper<FindClientRequest, FindClientResult>, ClientService>();
             services.AddSingleton<IResourceQueryHelper<StatsInfoRequest, StatsInfoResult>, StatsResourceQueryHelper>();
-            services
-                .AddSingleton<IResourceQueryHelper<StatsInfoRequest, AdvancedStatsInfo>,
-                    AdvancedClientStatsResourceQueryHelper>();
+            services.AddSingleton<IResourceQueryHelper<StatsInfoRequest, AdvancedStatsInfo>, AdvancedClientStatsResourceQueryHelper>();
             services.AddSingleton(typeof(IDataValueCache<,>), typeof(DataValueCache<,>));
             services.AddSingleton<IResourceQueryHelper<BanInfoRequest, BanInfo>, BanInfoResourceQueryHelper>();
+            return;
+
+            IEnumerable<Assembly> PluginAssemblies()
+            {
+                var pluginDir = $"{Utilities.OperatingDirectory}Plugins{Path.DirectorySeparatorChar}";
+
+                if (!Directory.Exists(pluginDir)) return [];
+
+                var dllFileNames =
+                    Directory.GetFiles($"{Utilities.OperatingDirectory}Plugins{Path.DirectorySeparatorChar}",
+                        "*.dll");
+                return dllFileNames.Select(Assembly.LoadFrom);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
-            app.UseStatusCodePages(_context =>
+            app.UseStatusCodePages(context =>
             {
-                if (_context.HttpContext.Response.StatusCode == (int)HttpStatusCode.NotFound)
+                if (context.HttpContext.Response.StatusCode == (int)HttpStatusCode.NotFound)
                 {
-                    _context.HttpContext.Response.Redirect(
-                        $"/Home/ResponseStatusCode?statusCode={_context.HttpContext.Response.StatusCode}");
+                    context.HttpContext.Response.Redirect($"/Home/ResponseStatusCode?statusCode={context.HttpContext.Response.StatusCode}");
                 }
 
                 return Task.CompletedTask;
@@ -137,7 +132,6 @@ namespace IW4MAdmin.WebfrontCore
             {
                 app.UseDeveloperExceptionPage();
             }
-
             else
             {
                 app.UseExceptionHandler("/Home/Error");

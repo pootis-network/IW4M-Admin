@@ -112,15 +112,25 @@ namespace SharedLibraryCore
             get => permission;
             protected set
             {
-                try
-                {
-                    permission = _config?.Commands[GetType().Name].MinimumPermission ?? value;
-                }
-
-                catch (KeyNotFoundException)
+                if (_config is null)
                 {
                     permission = value;
+                    return;
                 }
+
+                if (_config.Commands.TryGetValue(GetType().Name, out var byClassName))
+                {
+                    permission = byClassName.MinimumPermission;
+                    return;
+                }
+
+                if (_config.Commands.TryGetValue(this.CommandConfigNameForType(), out var byCommandName))
+                {
+                    permission = byCommandName.MinimumPermission;
+                    return;
+                }
+
+                permission = value;
             }
         }
 

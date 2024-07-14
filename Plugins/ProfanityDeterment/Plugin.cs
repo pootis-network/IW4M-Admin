@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Data.Models;
 using Microsoft.Extensions.DependencyInjection;
 using SharedLibraryCore;
+using SharedLibraryCore.Database.Models;
 using SharedLibraryCore.Events.Game;
 using SharedLibraryCore.Events.Management;
 using SharedLibraryCore.Interfaces;
@@ -23,16 +24,11 @@ public class Plugin : IPluginV2
 
     private readonly ProfanityDetermentConfiguration _configuration;
 
-    public static void RegisterDependencies(IServiceCollection serviceProvider)
-    {
-        serviceProvider.AddConfiguration<ProfanityDetermentConfiguration>("ProfanityDetermentSettings");
-    }
-
     public Plugin(ProfanityDetermentConfiguration configuration)
     {
         _configuration = configuration;
 
-        if (!(_configuration?.EnableProfanityDeterment ?? false))
+        if (!_configuration.EnableProfanityDeterment)
         {
             return;
         }
@@ -46,46 +42,30 @@ public class Plugin : IPluginV2
         };
     }
 
+    public static void RegisterDependencies(IServiceCollection serviceProvider)
+    {
+        serviceProvider.AddConfiguration<ProfanityDetermentConfiguration>("ProfanityDetermentSettings");
+    }
+
     private Task GameEventSubscriptionsOnClientMessaged(ClientMessageEvent clientEvent, CancellationToken token)
     {
-        if (!(_configuration?.EnableProfanityDeterment ?? false))
+        if (!_configuration.EnableProfanityDeterment)
         {
             return Task.CompletedTask;
         }
 
-        var offensiveWords = _configuration!.OffensiveWords;
-        var containsOffensiveWord = false;
-        var matchedFilters = new List<string>();
-
-        foreach (var word in offensiveWords.Where(word =>
-                     Regex.IsMatch(clientEvent.Message?.StripColors() ?? string.Empty, word,
-                         RegexOptions.IgnoreCase)))
-        {
-            containsOffensiveWord = true;
-            matchedFilters.Add(word);
-        }
-
-        if (!containsOffensiveWord)
+        var sender = clientEvent.Server.AsConsoleClient();
+        var messages = FindOffensiveWordsAndWarn(sender, clientEvent.Message);
+        if (messages.Count is 0)
         {
             return Task.CompletedTask;
         }
 
         var profanityInfringements = clientEvent.Origin.GetAdditionalProperty<int>(ProfanityKey);
-
-        var sender = clientEvent.Server.AsConsoleClient();
-        sender.AdministeredPenalties = new List<EFPenalty>
-        {
-            new()
-            {
-                AutomatedOffense = $"{clientEvent.Message} - {string.Join(",", matchedFilters)}"
-            }
-        };
-
         if (profanityInfringements >= _configuration.KickAfterInfringementCount)
         {
             clientEvent.Client.Kick(_configuration.ProfanityKickMessage, sender);
         }
-
         else if (profanityInfringements < _configuration.KickAfterInfringementCount)
         {
             clientEvent.Client.SetAdditionalProperty(ProfanityKey, profanityInfringements + 1);
@@ -97,7 +77,7 @@ public class Plugin : IPluginV2
 
     private Task OnClientStateInitialized(ClientStateInitializeEvent clientEvent, CancellationToken token)
     {
-        if (!(_configuration?.EnableProfanityDeterment ?? false))
+        if (!_configuration.EnableProfanityDeterment)
         {
             return Task.CompletedTask;
         }
@@ -109,34 +89,30 @@ public class Plugin : IPluginV2
 
         clientEvent.Client.SetAdditionalProperty(ProfanityKey, 0);
 
-        var offensiveWords = _configuration!.OffensiveWords;
-        var matchedFilters = new List<string>();
-        var containsOffensiveWord = false;
-
-        foreach (var word in offensiveWords.Where(word =>
-                     Regex.IsMatch(clientEvent.Client.CleanedName, word, RegexOptions.IgnoreCase)))
-        {
-            containsOffensiveWord = true;
-            matchedFilters.Add(word);
-            break;
-        }
-
-        if (!containsOffensiveWord)
+        var sender = clientEvent.Client.CurrentServer.AsConsoleClient();
+        var messages = FindOffensiveWordsAndWarn(sender, clientEvent.Client.CleanedName);
+        if (messages.Count is 0)
         {
             return Task.CompletedTask;
         }
 
-        var sender = Utilities.IW4MAdminClient(clientEvent.Client.CurrentServer);
-        sender.AdministeredPenalties = new List<EFPenalty>
-        {
-            new()
-            {
-                AutomatedOffense = $"{clientEvent.Client.Name} - {string.Join(",", matchedFilters)}"
-            }
-        };
-
         clientEvent.Client.Kick(_configuration.ProfanityKickMessage, sender);
-
         return Task.CompletedTask;
+    }
+
+    private List<string> FindOffensiveWordsAndWarn(EFClient sender, string message)
+    {
+        var offensiveWords = _configuration.OffensiveWords;
+        var matchedWords = offensiveWords.Where(word => Regex.IsMatch(message.StripColors(), word, RegexOptions.IgnoreCase)).ToList();
+
+        sender.AdministeredPenalties =
+        [
+            new EFPenalty
+            {
+                AutomatedOffense = $"{message} - {string.Join(",", matchedWords)}"
+            }
+        ];
+
+        return matchedWords;
     }
 }

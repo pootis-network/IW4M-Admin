@@ -6,10 +6,10 @@ namespace IW4MAdmin.Plugins.ProfanityDeterment
 {
     public class ProfanityDetermentConfiguration : IBaseConfiguration
     {
-        public List<string> OffensiveWords { get; set; }
+        public List<string> OffensiveWords { get; set; } = [];
         public bool EnableProfanityDeterment { get; set; }
-        public string ProfanityWarningMessage { get; set; }
-        public string ProfanityKickMessage { get; set; }
+        public required string ProfanityWarningMessage { get; set; }
+        public required string ProfanityKickMessage { get; set; }
         public int KickAfterInfringementCount { get; set; }
         public bool KickOnInfringingName { get; set; } = true;
 

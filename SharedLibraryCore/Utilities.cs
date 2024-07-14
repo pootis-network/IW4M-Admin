@@ -49,7 +49,7 @@ namespace SharedLibraryCore
         public static Layout CurrentLocalization = new Layout(new Dictionary<string, string>());
 
         public static TimeSpan DefaultCommandTimeout { get; set; } = new(0, 0, IsDevelopment ? 360 : 25);
-        public static char[] DirectorySeparatorChars = { '\\', '/' };
+        public static readonly char[] DirectorySeparatorChars = ['\\', '/'];
         public static char CommandPrefix { get; set; } = '!';
 
         public static string ToStandardFormat(this DateTime? time) => time?.ToString("yyyy-MM-dd HH:mm:ss UTC");
@@ -97,21 +97,15 @@ namespace SharedLibraryCore
         //Remove words from a space delimited string
         public static string RemoveWords(this string str, int num)
         {
-            if (str == null || str.Length == 0)
+            if (string.IsNullOrEmpty(str))
             {
-                return "";
+                return string.Empty;
             }
 
             var newStr = string.Empty;
             var tmp = str.Split(' ');
 
-            for (var i = 0; i < tmp.Length; i++)
-                if (i >= num)
-                {
-                    newStr += tmp[i] + ' ';
-                }
-
-            return newStr;
+            return tmp.Where((t, i) => i >= num).Aggregate(newStr, (current, t) => current + (t + ' '));
         }
 
         /// <summary>

@@ -22,9 +22,9 @@ public class Plugin : IPluginV2
 
     private const string ProfanityKey = "_profanityInfringements";
 
-    private readonly ProfanityDetermentConfiguration _configuration;
+    private readonly ProfanityDetermentSettings _configuration;
 
-    public Plugin(ProfanityDetermentConfiguration configuration)
+    public Plugin(ProfanityDetermentSettings configuration)
     {
         _configuration = configuration;
 
@@ -44,7 +44,7 @@ public class Plugin : IPluginV2
 
     public static void RegisterDependencies(IServiceCollection serviceProvider)
     {
-        serviceProvider.AddConfiguration<ProfanityDetermentConfiguration>("ProfanityDetermentSettings");
+        serviceProvider.AddConfiguration("ProfanityDetermentSettings", new ProfanityDetermentSettings());
     }
 
     private Task GameEventSubscriptionsOnClientMessaged(ClientMessageEvent clientEvent, CancellationToken token)

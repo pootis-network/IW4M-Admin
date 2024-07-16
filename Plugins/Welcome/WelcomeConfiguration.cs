@@ -1,22 +1,16 @@
 ﻿using SharedLibraryCore;
-using SharedLibraryCore.Interfaces;
 
 namespace IW4MAdmin.Plugins.Welcome
 {
-    public class WelcomeConfiguration : IBaseConfiguration
+    public class WelcomeConfiguration
     {
-        public string UserAnnouncementMessage { get; set; }
-        public string UserWelcomeMessage { get; set; }
-        public string PrivilegedAnnouncementMessage { get; set; }
+        public string UserAnnouncementMessage { get; set; } =
+            Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_USERANNOUNCE_V2"];
 
-        public IBaseConfiguration Generate()
-        {
-            UserAnnouncementMessage = Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_USERANNOUNCE_V2"];
-            UserWelcomeMessage = Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_USERWELCOME_V2"];
-            PrivilegedAnnouncementMessage = Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_PRIVANNOUNCE_V2"];
-            return this;
-        }
+        public string UserWelcomeMessage { get; set; } =
+            Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_USERWELCOME_V2"];
 
-        public string Name() => "WelcomeConfiguration";
+        public string PrivilegedAnnouncementMessage { get; set; } =
+            Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_PRIVANNOUNCE_V2"];
     }
 }

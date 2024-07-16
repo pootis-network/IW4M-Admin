@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SharedLibraryCore;
 using SharedLibraryCore.Interfaces;
 using SharedLibraryCore.Database.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
-using System.Text.Json;
+using System.Net.Http.Json;
 using System.Threading;
 using Humanizer;
 using Data.Abstractions;
@@ -21,13 +20,8 @@ namespace IW4MAdmin.Plugins.Welcome;
 public class Plugin : IPluginV2
 {
     public string Author => "RaidMax";
-    public string Version => "1.1";
+    public string Version => Utilities.GetVersionAsString();
     public string Name => "Welcome Plugin";
-
-    public static void RegisterDependencies(IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddConfiguration<WelcomeConfiguration>("WelcomePluginSettings");
-    }
 
     private readonly WelcomeConfiguration _configuration;
     private readonly IDatabaseContextFactory _contextFactory;
@@ -40,86 +34,85 @@ public class Plugin : IPluginV2
         IManagementEventSubscriptions.ClientStateAuthorized += OnClientStateAuthorized;
     }
 
+    public static void RegisterDependencies(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddConfiguration("WelcomePluginSettings", new WelcomeConfiguration());
+    }
+
     private async Task OnClientStateAuthorized(ClientStateEvent clientState, CancellationToken token)
     {
-        var newPlayer = clientState.Client;
+        var player = clientState.Client;
 
-        if (newPlayer.Level >= Permission.Trusted && !newPlayer.Masked ||
-            !string.IsNullOrEmpty(newPlayer.Tag) &&
-            newPlayer.Level != Permission.Flagged && newPlayer.Level != Permission.Banned &&
-            !newPlayer.Masked)
-            newPlayer.CurrentServer.Broadcast(
-                await ProcessAnnouncement(_configuration.PrivilegedAnnouncementMessage,
-                    newPlayer));
+        var isPrivileged = player.Level >= Permission.Trusted && !player.Masked ||
+                           !string.IsNullOrEmpty(player.Tag) && player.Level != Permission.Flagged &&
+                           player.Level != Permission.Banned && !player.Masked;
 
-        newPlayer.Tell(await ProcessAnnouncement(_configuration.UserWelcomeMessage, newPlayer));
-
-        if (newPlayer.Level == Permission.Flagged)
+        if (isPrivileged)
         {
-            string penaltyReason;
+            var announcement = await ProcessAnnouncement(_configuration.PrivilegedAnnouncementMessage, player);
+            player.CurrentServer.Broadcast(announcement);
+        }
 
-            await using var context = _contextFactory.CreateContext(false);
-            {
-                penaltyReason = await context.Penalties
-                    .Where(p => p.OffenderId == newPlayer.ClientId && p.Type == EFPenalty.PenaltyType.Flag)
-                    .OrderByDescending(p => p.When)
-                    .Select(p => p.AutomatedOffense ?? p.Offense)
-                    .FirstOrDefaultAsync(cancellationToken: token);
-            }
+        // Send welcome message to the player
+        player.Tell(await ProcessAnnouncement(_configuration.UserWelcomeMessage, player));
 
-            newPlayer.CurrentServer.ToAdmins(Utilities.CurrentLocalization
-                .LocalizationIndex["PLUGINS_WELCOME_FLAG_MESSAGE"]
-                .FormatExt(newPlayer.Name, penaltyReason));
+        if (player.Level == Permission.Flagged)
+        {
+            var penaltyReason = await GetPenaltyReason(player.ClientId, token);
+
+            player.CurrentServer.ToAdmins(
+                Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_FLAG_MESSAGE"]
+                    .FormatExt(player.Name, penaltyReason)
+            );
         }
         else
         {
-            newPlayer.CurrentServer.Broadcast(await ProcessAnnouncement(_configuration.UserAnnouncementMessage,
-                newPlayer));
+            var announcement = await ProcessAnnouncement(_configuration.UserAnnouncementMessage, player);
+            player.CurrentServer.Broadcast(announcement);
         }
     }
 
-    private async Task<string> ProcessAnnouncement(string msg, EFClient joining)
+    private async Task<string> GetPenaltyReason(int clientId, CancellationToken token)
     {
-        msg = msg.Replace("{{ClientName}}", joining.Name);
-        msg = msg.Replace("{{ClientLevel}}",
-            $"{Utilities.ConvertLevelToColor(joining.Level, joining.ClientPermission.Name)}{(string.IsNullOrEmpty(joining.Tag) ? "" : $" (Color::White){joining.Tag}(Color::White)")}");
-        // this prevents it from trying to evaluate it every message
-        if (msg.Contains("{{ClientLocation}}"))
-        {
-            msg = msg.Replace("{{ClientLocation}}", await GetCountryName(joining.IPAddressString));
-        }
+        await using var context = _contextFactory.CreateContext(false);
 
-        msg = msg.Replace("{{TimesConnected}}",
-            joining.Connections.Ordinalize(Utilities.CurrentLocalization.Culture));
-
-        return msg;
+        return await context.Penalties
+            .Where(p => p.OffenderId == clientId && p.Type == EFPenalty.PenaltyType.Flag)
+            .OrderByDescending(p => p.When)
+            .Select(p => p.AutomatedOffense ?? p.Offense)
+            .FirstOrDefaultAsync(token) ?? string.Empty;
     }
 
-    /// <summary>
-    /// makes a webrequest to determine IP origin 
-    /// </summary>
-    /// <param name="ip">IP address to get location of</param>
-    /// <returns></returns>
-    private async Task<string> GetCountryName(string ip)
+    private static async Task<string> ProcessAnnouncement(string messageTemplate, EFClient player)
     {
-        using var wc = new HttpClient();
+        var levelWithColor = $"{Utilities.ConvertLevelToColor(player.Level, player.ClientPermission.Name)}{(string.IsNullOrEmpty(player.Tag)
+            ? string.Empty
+            : $" (Color::White){player.Tag}(Color::White)")}";
+
+        return messageTemplate
+            .Replace("{{ClientName}}", player.Name)
+            .Replace("{{ClientLevel}}", levelWithColor)
+            .Replace("{{ClientLocation}}", await GetCountryName(player.IPAddressString))
+            .Replace("{{TimesConnected}}", player.Connections.Ordinalize(Utilities.CurrentLocalization.Culture));
+    }
+
+    private static async Task<string> GetCountryName(string ipAddress)
+    {
         try
         {
-            var response =
-                await wc.GetStringAsync(new Uri(
-                    $"http://ip-api.com/json/{ip}?lang={Utilities.CurrentLocalization.LocalizationName.Split("-").First().ToLower()}"));
+            using var httpClient = new HttpClient();
+            var apiUrl =
+                $"http://ip-api.com/json/{ipAddress}?lang={Utilities.CurrentLocalization.LocalizationName.Split('-').First().ToLower()}";
 
-            var json = JsonDocument.Parse(response);
-            response = json.RootElement.TryGetProperty("country", out var countryElement) ? countryElement.GetString() : null;
+            var response = await httpClient.GetFromJsonAsync<IpApiResponse>(apiUrl);
 
-            return string.IsNullOrEmpty(response)
-                ? Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_UNKNOWN_COUNTRY"]
-                : response;
+            return response?.Country ?? Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_UNKNOWN_COUNTRY"];
         }
-
         catch
         {
             return Utilities.CurrentLocalization.LocalizationIndex["PLUGINS_WELCOME_UNKNOWN_IP"];
         }
     }
+
+    private record IpApiResponse(string Country);
 }

@@ -4,6 +4,6 @@ namespace IW4MAdmin.Plugins.Login;
 
 public class LoginStates
 {
-    public ConcurrentDictionary<int, bool> AuthorizedClients { get; } = new();
+    public ConcurrentDictionary<int, bool> AuthorizedClients { get; } = [];
     public const string LoginKey = "IsLoggedIn";
 }

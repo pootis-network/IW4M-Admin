@@ -16,13 +16,13 @@ public class Plugin : IPluginV2
     public string Name => "Login";
     public string Version => Utilities.GetVersionAsString();
     public string Author => "RaidMax";
-    
+
     private readonly LoginStates _loginStates;
 
     public Plugin(LoginConfiguration configuration, LoginStates loginStates)
     {
         _loginStates = loginStates;
-        if (!(configuration?.RequirePrivilegedClientLogin ?? false))
+        if (!configuration.RequirePrivilegedClientLogin)
         {
             return;
         }
@@ -38,7 +38,7 @@ public class Plugin : IPluginV2
 
     public static void RegisterDependencies(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddConfiguration<LoginConfiguration>("LoginPluginSettings");
+        serviceCollection.AddConfiguration("LoginPluginSettings", new LoginConfiguration());
         serviceCollection.AddSingleton(new LoginStates());
     }
 
@@ -64,20 +64,12 @@ public class Plugin : IPluginV2
                 return true;
             }
 
-            if (gameEvent.Extra.GetType() == typeof(SetPasswordCommand) &&
-                gameEvent.Origin?.Password == null)
+            switch (gameEvent.Extra)
             {
-                return true;
-            }
-
-            if (gameEvent.Extra.GetType() == typeof(LoginCommand))
-            {
-                return true;
-            }
-
-            if (gameEvent.Extra.GetType() == typeof(RequestTokenCommand))
-            {
-                return true;
+                case SetPasswordCommand when gameEvent.Origin?.Password is null:
+                case LoginCommand:
+                case RequestTokenCommand:
+                    return true;
             }
 
             if (!_loginStates.AuthorizedClients[gameEvent.Origin.ClientId])

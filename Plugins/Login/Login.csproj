@@ -13,6 +13,7 @@
     <Configurations>Debug;Release;Prerelease</Configurations>
     <LangVersion>Latest</LangVersion>
     <RootNamespace>IW4MAdmin.Plugins.Login</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

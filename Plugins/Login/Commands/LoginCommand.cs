@@ -2,9 +2,9 @@
 using SharedLibraryCore;
 using SharedLibraryCore.Commands;
 using SharedLibraryCore.Configuration;
-using SharedLibraryCore.Database.Models;
 using SharedLibraryCore.Helpers;
 using SharedLibraryCore.Interfaces;
+using EFClient = Data.Models.Client.EFClient;
 
 namespace IW4MAdmin.Plugins.Login.Commands
 {
@@ -13,7 +13,8 @@ namespace IW4MAdmin.Plugins.Login.Commands
         private readonly LoginConfiguration _loginConfig;
         private readonly LoginStates _loginStates;
 
-        public LoginCommand(CommandConfiguration config, ITranslationLookup translationLookup, LoginConfiguration loginConfig, LoginStates loginStates) : base(config, translationLookup)
+        public LoginCommand(CommandConfiguration config, ITranslationLookup translationLookup, LoginConfiguration loginConfig,
+            LoginStates loginStates) : base(config, translationLookup)
         {
             _loginConfig = loginConfig;
             _loginStates = loginStates;
@@ -22,14 +23,14 @@ namespace IW4MAdmin.Plugins.Login.Commands
             Alias = "li";
             Permission = EFClient.Permission.Trusted;
             RequiresTarget = false;
-            Arguments = new CommandArgument[]
-            {
-                new()
+            Arguments =
+            [
+                new CommandArgument
                 {
                     Name = Utilities.CurrentLocalization.LocalizationIndex["COMMANDS_ARGS_PASSWORD"],
                     Required = true
                 }
-            };
+            ];
         }
 
         public override async Task ExecuteAsync(GameEvent gameEvent)
@@ -39,7 +40,7 @@ namespace IW4MAdmin.Plugins.Login.Commands
                 gameEvent.Origin.Tell(_translationLookup["PLUGINS_LOGIN_COMMANDS_LOGIN_DISABLED"]);
                 return;
             }
-            
+
             var success = gameEvent.Owner.Manager.TokenAuthenticator.AuthorizeToken(new TokenIdentifier
             {
                 ClientId = gameEvent.Origin.ClientId,
@@ -57,9 +58,9 @@ namespace IW4MAdmin.Plugins.Login.Commands
                 _loginStates.AuthorizedClients[gameEvent.Origin.ClientId] = true;
             }
 
-            _ = success ?
-                gameEvent.Origin.Tell(_translationLookup["PLUGINS_LOGIN_COMMANDS_LOGIN_SUCCESS"]) :
-                gameEvent.Origin.Tell(_translationLookup["PLUGINS_LOGIN_COMMANDS_LOGIN_FAIL"]);
+            gameEvent.Origin.Tell(success
+                ? _translationLookup["PLUGINS_LOGIN_COMMANDS_LOGIN_SUCCESS"]
+                : _translationLookup["PLUGINS_LOGIN_COMMANDS_LOGIN_FAIL"]);
         }
     }
 }

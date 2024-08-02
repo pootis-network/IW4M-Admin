@@ -878,7 +878,7 @@ namespace IW4MAdmin.Application
             if (parts.Length == 2 && int.TryParse(parts[0], out var high) &&
                 int.TryParse(parts[1], out var low))
             {
-                var guid = long.Parse(high.ToString("X") + low.ToString("X"), NumberStyles.HexNumber);
+                var guid = long.Parse(high.ToString("X8") + low.ToString("X8"), NumberStyles.HexNumber);
 
                 var penalties = await PenaltySvc
                     .GetActivePenaltiesByIdentifier(null, guid, receiveEvent.Client.GameName);
